@@ -1,5 +1,4 @@
 const ipc = require("electron").ipcRenderer;
-const Promise = require("promise");
 
 var requests = {};
 

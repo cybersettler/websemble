@@ -1,5 +1,4 @@
 const electron = require('electron');
-const jade = require('jade');
 
 function UIResponse( request ){
   // var route = routes[ request.uri ];

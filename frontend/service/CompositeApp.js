@@ -1,4 +1,3 @@
-var Promise = require("promise");
 const ComponentService = require( "./ComponentService.js" );
 const ComponentFactory = require( "../factory/ComponentFactory.js" );
 const Service = require( "./ComponentService.js" );

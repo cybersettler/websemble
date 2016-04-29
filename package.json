@@ -6,6 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "electron-prebuilt": "0.37.x",
+    "shortid": "^2.2.2",
+    "tv4": "^1.1.12"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cybersettler/websemble.git"

@@ -1,5 +1,4 @@
 var fs = require('fs');
-var Promise = require('promise');
 var tv4 = require('tv4');
 var Matcher = require('./Matcher.js');
 var shortid = require('shortid');
@@ -231,7 +230,7 @@ function validate( oCollection, oData ){
     });
     throw new Error( message );
   };
-  
+
 }
 
 module.exports = {

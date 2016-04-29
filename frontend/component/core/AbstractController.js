@@ -11,8 +11,10 @@ function AbstractController( args ){
   var menuConfig = args[1];
 
   // FIXME: user interface could be given as a constructor parameter
-  var menu = Menu.buildFromTemplate( menuConfig );
-  Menu.setApplicationMenu( menu );
+  if( menuConfig ){
+    var menu = Menu.buildFromTemplate( menuConfig );
+    Menu.setApplicationMenu( menu );
+  }
 
   this.scope.views = {};
   this.scope.components = {};
