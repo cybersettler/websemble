@@ -1,5 +1,6 @@
 const ClassUtil = require( "../util/ClassUtil.js" );
 const StringUtil = require( "../util/StringUtil.js" );
+const appRoot = require('app-root-path');
 
 var ComponentService = {
 
@@ -120,7 +121,7 @@ function getComponentPath( componentTag ){
   });
 
   var namespace = match[ 1 ];
-  return '../component/' + namespace + '/' + componentName + '/';
+  return appRoot + '/frontend/component/' + namespace + '/' + componentName + '/';
 
 }
 

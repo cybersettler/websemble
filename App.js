@@ -4,7 +4,7 @@ const BrowserWindow = electron.BrowserWindow;  // Module to create native browse
 const Storage = require("./backend/util/Storage.js");
 const Request = require("./backend/util/UIRequest.js");
 const Response = require("./backend/util/UIResponse.js");
-const Router = require("./backend/util/UIRouter.js");
+const appRoot = require('app-root-path');
 
 function App(){
 
@@ -35,7 +35,7 @@ function App(){
     });
 
     // and load the index.html of the app.
-    mainWindow.loadURL('file://' + __dirname + '/index.html');
+    mainWindow.loadURL('file://' + appRoot + '/index.html');
 
 
     // Open the devtools.
@@ -52,19 +52,6 @@ function App(){
       if(args.viewId == 'index' ){
         mainWindow.toggleDevTools();
       }
-    });
-
-    ipc.on("navigate",function( e,args){
-      var request = new Request( e.sender, args );
-      var response = new Response( request );
-      return Router.handleRequest( request ).done(
-        function( result ){
-          response.send( result );
-        },
-        function( err ){
-          console.log( "An error ocurred", err );
-        }
-      );
     });
 
     ipc.on( "get",function( e, args ){
