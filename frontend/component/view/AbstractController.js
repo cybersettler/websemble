@@ -1,5 +1,5 @@
 function AbstractController( args ){
-  this.view = atgs[0];
+  this.view = args[0];
   this.model = args[1];
 }
 
