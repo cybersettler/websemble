@@ -14,7 +14,7 @@ var UIComponentService = {
       console.log( "Element created", elementName );
 
       var model = {};
-      var controller = ComponentFactory.getInstance( this, ViewController, model );
+      var controller = ComponentFactory.getInstance( ViewController, this, model );
       ComponentService.addComponentCallbacks( this, controller );
 
       // Fires when an instance was inserted into the document

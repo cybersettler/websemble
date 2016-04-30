@@ -16,7 +16,7 @@ var AppComponentService = {
       console.log( "Element created", elementName );
 
       var model = {};
-      var controller = ComponentFactory.getInstance( this, ViewController, model );
+      var controller = ComponentFactory.getInstance( ViewController, this, model );
       app.afterElementAttached.resolve( controller );
       ComponentService.addComponentCallbacks( this, controller );
 

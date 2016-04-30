@@ -1,19 +1,26 @@
-const electron = require('electron');
-const remote = electron.remote;
-const Menu = remote.Menu;
-// FIXME: user interface configuration must be externally set
-// const Config = require("../../config/config.js");
-const BackendService = require("../../service/BackendService.js");
-
 function AbstractController( args ){
 
-  this.view = args[0];
-  var menuConfig = args[1];
+  const electron = require('electron');
+  const remote = electron.remote;
+  const Menu = remote.Menu;
+  const BackendService = require("../../service/BackendService.js");
 
-  // FIXME: user interface could be given as a constructor parameter
-  if( menuConfig ){
-    var menu = Menu.buildFromTemplate( menuConfig );
+  this.view = args[0];
+  this.model = args[1];
+
+  this.getMenuInstance = function( template ){
+    return new Menu();
+  };
+
+  this.setMenuFromTemplate = function( template ){
+    var menu = Menu.buildFromTemplate( template );
     Menu.setApplicationMenu( menu );
+    this.menu = menu;
+  };
+
+  this.setMenu = function( menu ){
+    Menu.setApplicationMenu( menu );
+    this.menu = menu;
   }
 
   this.scope.views = {};

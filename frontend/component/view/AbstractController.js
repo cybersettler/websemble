@@ -1,5 +1,6 @@
-function AbstractController( view ){
-  // TODO: this is a stub
+function AbstractController( args ){
+  this.view = atgs[0];
+  this.model = args[1];
 }
 
 AbstractController.prototype.onAttached = function(){
