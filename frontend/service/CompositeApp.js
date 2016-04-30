@@ -17,7 +17,7 @@ function CompositeApp(){
       console.log( "Element created: core-app" );
 
       var model = {};
-      var controller = ComponentFactory.getInstance( this, ViewController, model );
+      var controller = ComponentFactory.getInstance( ViewController, this, model );
       ComponentService.addComponentCallbacks( this, controller );
       resolve( controller );
 
