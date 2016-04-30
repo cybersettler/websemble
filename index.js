@@ -1,1 +1,6 @@
-module.exports = require( './service/Facade.js' );
+module.exports = {
+  frontend: require( './frontend/service/Facade.js' ),
+  backend:{
+    App:require('./App.js')
+  }
+};
