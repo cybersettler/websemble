@@ -1,7 +1,6 @@
 var ComponentFactory = {
-  getInstance: function( ViewController, ...args ){
-    var view = args[0];
-    var controller = new ViewController( args );
+  getInstance: function( ViewController, view, model ){
+    var controller = new ViewController( view, model );
     addShadowRootTemplate( view, controller );
     addMainTemplate( view, controller );
     return controller;
