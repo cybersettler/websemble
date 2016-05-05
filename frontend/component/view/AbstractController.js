@@ -1,6 +1,6 @@
-function AbstractController( view, model ){
-  this.view = view;
-  this.model = model;
+function AbstractController( args ){
+  this.view = args[0];
+  this.model = args[1];
 }
 
 AbstractController.prototype.onAttached = function(){

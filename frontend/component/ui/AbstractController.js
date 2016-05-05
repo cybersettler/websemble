@@ -1,9 +1,9 @@
 var StringUtil = require("../../util/StringUtil.js");
 
-function AbstractController( view, model ){
+function AbstractController( args ){
 
-  this.view = view;
-  this.model = model || {};
+  this.view = args[0];
+  this.model = args[1] || {};
 
 }
 

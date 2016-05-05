@@ -1,12 +1,12 @@
-function AbstractController( view, model ){
+function AbstractController( args ){
 
   const electron = require('electron');
   const remote = electron.remote;
   const Menu = remote.Menu;
   const BackendService = require("../../service/BackendService.js");
 
-  this.view = view;
-  this.model = model;
+  this.view = args[0];
+  this.model = args[1];
 
   this.getMenuInstance = function( template ){
     return new Menu();
