@@ -1,6 +1,6 @@
 {
   "name": "websemble",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Desktop application framework based on web technology.",
   "main": "index.js",
   "scripts": {
