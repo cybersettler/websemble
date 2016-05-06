@@ -1,12 +1,31 @@
+/**
+ * ui API.
+ * @namespace UI
+ */
+
 var StringUtil = require("../../util/StringUtil.js");
 
+/**
+ * Abstract controller extended by ui controllers.
+ * @constructor
+ * @memberof UI
+ * @implements { WebComponentInterface }
+ * @param { Array } args - The arguments.
+ */
 function AbstractController( args ){
 
+  /** @member { HTMLElement } */
   this.view = args[0];
+
+  /** @member { Object } */
   this.model = args[1] || {};
 
 }
 
+/**
+ * Returns the view to which this component belongs.
+ * @returns { HTMLElement } The HTML element.
+ */
 AbstractController.prototype.getParentView = function(){
   var e = this.view;
   while( e && !isViewComponent( e ) ){
@@ -36,6 +55,11 @@ AbstractController.prototype.onAttached = function(){
 
 };
 
+/**
+ * Returns the model of this component. Called
+ * when model data attribute is defined.
+ * @returns { Promise } A promise.
+ */
 AbstractController.prototype.fetchModel = function(){
 
   var params = {
