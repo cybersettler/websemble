@@ -4,13 +4,21 @@
   "description": "Desktop application framework based on web technology.",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "app-root-path": "^1.0.0",
     "electron-prebuilt": "^0.37.7",
+    "mem-fs": "^1.1.2",
+    "mem-fs-editor": "^2.2.0",
     "shortid": "^2.2.2",
     "tv4": "^1.1.12"
+  },
+  "devDependencies": {
+    "eslint": "^2.9.0",
+    "eslint-config-google": "^0.5.0",
+    "gulp": "^3.9.1"
   },
   "repository": {
     "type": "git",
@@ -21,6 +29,9 @@
     "web",
     "components"
   ],
+  "eslintConfig": {
+    "extends": "google"
+  },
   "author": "Javier Escobar <cybersettler@babylonone.com>",
   "license": "Apache-2.0",
   "bugs": {

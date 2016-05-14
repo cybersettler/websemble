@@ -1,0 +1,126 @@
+/**
+ * REST service.
+ * @module service/RESTService
+ */
+
+const DAOFactory = require('../dao/DAOFactory.js');
+const RESTResponse = require('./RESTRespinse.js');
+
+function parseRequest( request ){
+  var parts = decodeURI( request ).split("?");
+  var uri = parts[0];
+  var resource = parseResource( uri );
+  var query = null;
+  if( parts.length > 1 ){
+    query = parseQuery( parts[1] );
+  }
+  return {
+    uri:parts[0],
+    query:query,
+    resource:resource
+  };
+}
+
+function parseResource( uri ){
+  var result = {};
+  // TODO: refactor way to get URI parts and their namings
+  var parts = uri.split("/");
+  result.collection = parts[0];
+  if( parts.length > 1 ) result.documentId = parts[ parts.length - 1 ];
+  if( parts.length > 2 ){
+    result.location = /^(.*)\/\w\/$/.exec( uri )[1];
+  }
+  return result;
+}
+
+function parseQuery( queryString ){
+  var data = decodeURIComponent( queryString ).split("&");
+  var result = {};
+  data.forEach();
+  function setAttribute( item ){
+    var parts = item.split("=");
+    var key = parts[0].trim();
+    var value = parts[1].trim();
+    result[ key ] = value;
+  }
+  return result;
+}
+
+module.exports = {
+  /**
+   * Handle GET request.
+   * @param {string} url - Resource locator.
+   * @returns {Promise} A resource.
+   */
+  handleGet: function (url) {
+    var request = parseRequest(url);
+    var collection = DaoFactory.getInstance(request.resource.collection);
+    if( request.resource.documentId && "schema" === request.resource.documentId ){
+      return collection.getSchema().then(function(result){
+        return new RESTResponse(url,"GET",result);
+      });
+    }else if( request.resource.documentId ){
+      return collection.findById(request.resource.documentId).then(function(result){
+        return new RESTResponse(url,"GET",result);
+      });
+    }else if(request.resource.query){
+      return collection.findWhere(request.resource.query).then(function(result){
+        return new RESTResponse(url,"GET",result);
+      });
+    }
+    return collection.findAll( request.resource.collection, request.query ).then(function(result){
+      return new RESTResponse(url,"GET",result);
+    });
+  },
+  /**
+   * Handle POST request.
+   * @param {string} url - Resource locator.
+   * @param {Onject} data - Resource data.
+   * @returns {Promise} - Created resource.
+   */
+  handlePost: function (url,data) {
+    var request = parseRequest(url);
+    var collection = DaoFactory.getInstance(request.resource.collection);
+    return collection.create(data).then(function(result){
+      return new RESTResponse(url,"POST",result);
+    });
+  },
+  /**
+   * Handle PUT request.
+   * @param {string} url - Resource locator.
+   * @param {Object} data - Resource data.
+   * @returns {Promise} Updated resource.
+   */
+  handlePut: function (url, data) {
+    var request = parseRequest(url);
+    var collection = DaoFactory.getInstance(request.resource.collection);
+    return collection.update(request.resource.documentId, data).then(function(result){
+      return new RESTResponse(url,"PUT",result);
+    });
+  },
+  /**
+   * Handle PATCH request.
+   * @param {string} url - Resource locator.
+   * @param {Object} data - Resource data.
+   * @returns {Promise} Updated resource.
+   */
+  handlePatch: function (url, data) {
+    var request = parseRequest(url);
+    var collection = DaoFactory.getInstance(request.resource.collection);
+    return collection.updatePartially(request.resource.documentId, data).then(function(result){
+      return new RESTResponse(url,"PATCH",result);
+    });
+  },
+  /**
+   * Handle DELETE request.
+   * @param {string} url - Resource locator.
+   * @returns {Promise} The number of deleted resources.
+   */
+  handleDelete: function (url) {
+    var request = parseRequest(url);
+    var collection = DaoFactory.getInstance(request.resource.collection);
+    return collection.delete(request.resource.documentId).then(function(result){
+      return new RESTResponse(url,"DELETE",result);
+    });
+  }
+};
