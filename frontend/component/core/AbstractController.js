@@ -10,8 +10,7 @@
  * @implements { WebComponentInterface }
  * @param{ Array } args - The arguments.
  */
-function AbstractController( args ){
-
+function AbstractController(args) {
   const electron = require('electron');
   const remote = electron.remote;
   const Menu = remote.Menu;
@@ -24,7 +23,7 @@ function AbstractController( args ){
   this.model = args[1];
 
   /** @member { Object } */
-  this.menu;
+  this.menu = {};
 
   /**
    * A map with view tag name as key and view controller as value.
@@ -35,19 +34,22 @@ function AbstractController( args ){
   /* @inner { Object } scope.components - A map with component tag name as key and HTML element contructor as value. */
   this.scope.components = {};
 
-  /** Instantiates an Electron remote Menu. */
-  this.getMenuInstance = function(){
+  /**
+   * Instantiates an Electron remote Menu.
+   * @return {Object} Electron Menu instance.
+   */
+  this.getMenuInstance = function() {
     return new Menu();
   };
 
   /**
    * Sets the app menu form a template.
    * @param{ Array } template - Generally, the template is just an array of options for constructing a MenuItem.
-   * @returns { Object } This.
+   * @return { Object } This.
    */
-  this.setMenuFromTemplate = function( template ){
-    var menu = Menu.buildFromTemplate( template );
-    Menu.setApplicationMenu( menu );
+  this.setMenuFromTemplate = function(template) {
+    var menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
     this.menu = menu;
     return this;
   };
@@ -55,23 +57,23 @@ function AbstractController( args ){
   /**
    * Sets the app menu.
    * @param { Object } menu - The app menu, an instance of electron.remote.Menu.
-   * @returns { Object } This.
+   * @return { Object } This.
    */
-  this.setMenu = function( menu ){
-    Menu.setApplicationMenu( menu );
+  this.setMenu = function(menu) {
+    Menu.setApplicationMenu(menu);
     this.menu = menu;
     return this;
-  }
+  };
 
   /**
    * Stores a reference of a view.
    * @param { Object } params - View data.
    * @param { string } params.elementName - View tag name.
    * @param { Object } params.viewController - View controller.
-   * @returns { Object } This.
+   * @return { Object } This.
    */
-  this.registerView = function( params ){
-    this.scope.views[ params.elementName ] = params.viewController;
+  this.registerView = function(params) {
+    this.scope.views[params.elementName] = params.viewController;
     return this;
   };
 
@@ -80,10 +82,10 @@ function AbstractController( args ){
    * @param { Object } params - Element data.
    * @param { string } params.elementName - Element tag name.
    * @param { function } params.elementConstructor - HTML element constructor.
-   * @returns { Object } This.
+   * @return { Object } This.
    */
-  this.registerElement = function( params ){
-    this.scope.components[ params.elementName ] = params.elementConstructor;
+  this.registerElement = function(params) {
+    this.scope.components[params.elementName] = params.elementConstructor;
     return this;
   };
 
@@ -91,20 +93,20 @@ function AbstractController( args ){
    * Returns the constructor of the specified HTML element.
    * @param { Object } params - Element data.
    * @param { string } params.elementName - Element tag name.
-   * @returns { function } The HTML element constructor.
+   * @return { function } The HTML element constructor.
    */
-  this.getElement = function( params ){
-    return this.scope.components[ params.elementName ];
+  this.getElement = function(params) {
+    return this.scope.components[params.elementName];
   };
 
   /**
    * Returns an instance of the specified HTML element.
    * @param { Object } params - Element data.
    * @param { string } params.elementName - Element tag name.
-   * @returns { HTMLElement } The HTML element constructor.
+   * @return { HTMLElement } The HTML element constructor.
    */
-  this.getElementInstance = function( params ){
-    var Element = this.getElement( params );
+  this.getElementInstance = function(params) {
+    var Element = this.getElement(params);
     return new Element();
   };
 
@@ -112,10 +114,10 @@ function AbstractController( args ){
    * Destroys the reference to a view.
    * @param { Object } params - View data.
    * @param { string } params.elementName - View tag name.
-   * @returns { Object } this.
+   * @return { Object } this.
    */
-  this.unregisterView = function( params ){
-    delete this.scope.views[ params.elementName ];
+  this.unregisterView = function(params) {
+    delete this.scope.views[params.elementName];
     return this;
   };
 
@@ -124,85 +126,80 @@ function AbstractController( args ){
    * @param { Object } data - Event data.
    * @param { string } data.action - Event name.
    * @param { string } target - Event target.
-   * @returns { Promise } A promise.
+   * @return { Promise } A promise.
    */
-  this.dispatch = function( data, target ){
-
-    if( !target ){
-      return this[ data.action ]( data );
+  this.dispatch = function(data, target) {
+    if (!target) {
+      return this[data.action](data);
     }
 
-    var viewController = this.getViewController( target );
-    return viewController[ data.action ]( data );
-
+    var viewController = this.getViewController(target);
+    return viewController[data.action](data);
   };
 
   /**
    * Returns a controller of a component.
    * @param { string } tag - HTML element tag name.
-   * @returns { Object } Component controller.
+   * @return { Object } Component controller.
    */
-  this.getViewController = function( tag ){
-    return this.scope.views[ tag ];
+  this.getViewController = function(tag) {
+    return this.scope.views[tag];
   };
 
   /**
    * Makes a get request to the backend.
    * @param { Object } params - Get request data.
-   * @returns { Promise } The response.
+   * @return { Promise } The response.
    */
-  this.getRequest = function( params ){
-    return BackendService.get( params );
-    // TODO: there could be a hook
+  this.getRequest = function(params) {
+    return BackendService.get(params);
   };
 
   /**
    * Makes a post request to the backend.
    * @param { Object } params - Post data.
-   * @returns { Promise } The response.
+   * @return { Promise } The response.
    */
-  this.postRequest = function( params ){
-    return BackendService.post( params.ref, params.data );
-    // TODO: implement
+  this.postRequest = function(params) {
+    return BackendService.post(params.ref, params.data);
   };
 
   /**
    * Makes a put request to the backend.
    * @param { Object } params - Put data.
-   * @returns { Promise } The response.
+   * @return { Promise } The response.
    */
-  this.putRequest = function( params ){
-    return BackendService.put( params.ref, params.data );
-    // TODO: implement
+  this.putRequest = function(params) {
+    return BackendService.put(params.ref, params.data);
   };
 
   /**
    * Makes a patch request to the backend.
    * @param { Object } params - Post data.
-   * @returns { Promise } The response.
+   * @return { Promise } The response.
    */
-  this.patchRequest = function( params ){
-    return BackendService.patch( params.ref, params.data );
-    // TODO: implement
+  this.patchRequest = function(params) {
+    return BackendService.patch(params.ref, params.data);
   };
 
   /**
    * Makes a delete request to the backend.
    * @param { Object } params - Delete data.
-   * @returns { Promise } The response.
+   * @return { Promise } The response.
    */
-  this.deleteRequest = function( params ){
-    return BackendService.delete( params.ref );
-    // TODO: implement
+  this.deleteRequest = function(params) {
+    return BackendService.delete(params.ref);
   };
 
   /**
    * Removes all the views from the app container.
-   * @returns { Object } this.
+   * @return { Object } this.
    */
-  this.clearViews = function(){
+  this.clearViews = function() {
     var view = this.view;
-    while ( view.firstChild ) var child = view.removeChild( view.lastChild );
+    while (view.firstChild) {
+      view.removeChild(view.lastChild);
+    }
     return this;
   };
 
@@ -210,11 +207,11 @@ function AbstractController( args ){
    * Clears all the views from the app container and
    * adds the specified view.
    * @param { Object } params - View data.
-   * @returns { Object } this.
+   * @return { Object } this.
    */
-  this.setView = function( params ){
+  this.setView = function(params) {
     this.clearViews();
-    this.addView({ elementName: params.view });
+    this.addView({elementName: params.view});
     return this;
   };
 
@@ -223,23 +220,22 @@ function AbstractController( args ){
    * @param { Object } params - View data.
    * @return { HTMLElement } The added HTML element.
    */
-  this.addView = function( params ){
-    var element = this.getElementInstance( params );
-    this.view.appendChild( element );
+  this.addView = function(params) {
+    var element = this.getElementInstance(params);
+    this.view.appendChild(element);
     return element;
   };
 
   /**
    * Remove the speciefied view from the app container.
    * @param { Object } params - View data.
-   * @returns { HTMLElement } The removed HTML element.
+   * @return { HTMLElement } The removed HTML element.
    */
-  this.removeView = function( params ){
-    var element = this.view.querySelector( params.elementName.toLowerCase() );
-    this.view.removeChild( element );
+  this.removeView = function(params) {
+    var element = this.view.querySelector(params.elementName.toLowerCase());
+    this.view.removeChild(element);
     return element;
   };
-
 }
 
 module.exports = AbstractController;

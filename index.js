@@ -1,6 +1,14 @@
+/**
+ * Websemble module.
+ * @module Websemble
+ */
+
 module.exports = {
-  frontend: require( './frontend/service/Facade.js' ),
-  backend:{
-    App:require('./App.js')
+  /** Frontend facade. */
+  frontend: require('./frontend/service/ComponentFacade.js'),
+  /** Backend */
+  backend: {
+    /** @class */
+    App: require('./App.js')
   }
 };
