@@ -8,8 +8,8 @@ module.exports = {
     // subclass extends superclass
     Child.prototype = Object.create(Parent.prototype);
 
-    Child.prototype.super = function(...args) {
-      Parent.call(this, args); // call super constructor.
+    Child.prototype.super = function() {
+      Parent.call(this, arguments); // call super constructor.
     };
 
     Child.prototype.constructor = Child;
