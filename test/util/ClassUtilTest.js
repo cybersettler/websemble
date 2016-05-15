@@ -26,20 +26,20 @@ describe('ClassUtil', function() {
     this.super(); // call super constructor.
   }
 
-  describe('Child class Rectangle extends Shape', function () {
+  describe('#extend(Superclass,Subclass)', function () {
     var RectangleShape = ClassUtil.extend(Shape,Rectangle);
     var rectangle = new RectangleShape();
-    it("is an instance of Rectangle", function(){
+    it("Result is an instance of Subclass", function(){
       assert.equal(true, rectangle instanceof Rectangle);
     });
-    it("is an instance of Shape", function(){
+    it("Result is an instance of Superclass", function(){
       assert.equal(true, rectangle instanceof Shape);
     });
-    it("has x and y attributes", function(){
+    it("Result has attributes of Superclass", function(){
       assert.strictEqual(0,rectangle.x);
       assert.strictEqual(0,rectangle.y);
     });
-    it("has move method", function(){
+    it("Result has methods of Superclas", function(){
       rectangle.move(1, 1);
       assert.strictEqual(1,rectangle.x);
       assert.strictEqual(1,rectangle.y);

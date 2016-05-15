@@ -3,7 +3,7 @@ const reqlib = require('app-root-path').require;
 const StringUtil = reqlib('/util/StringUtil.js');
 
 describe('StringUtil', function() {
-  describe('#capitalize()', function () {
+  describe('#capitalize(string)', function () {
     it('should return first letter capitalized', function () {
       var string = "quixote";
       var capitalized = StringUtil.capitalize(string);
@@ -11,7 +11,7 @@ describe('StringUtil', function() {
       assert.notStrictEqual(string, capitalized);
     });
   });
-  describe('#camelCase()', function(){
+  describe('#camelCase(string)', function(){
     it("should return space separated words as camelCase", function(){
       var string = "three blind mice";
       assert.strictEqual("threeBlindMice", StringUtil.camelCase(string));
@@ -29,7 +29,7 @@ describe('StringUtil', function() {
       assert.strictEqual("threeBlindMice", StringUtil.camelCase(string));
     });
   });
-  describe('#pascalCase()', function(){
+  describe('#pascalCase(string)', function(){
     it("should return space separated words as PascalCase", function(){
       var string = "don quixote";
       assert.strictEqual("DonQuixote", StringUtil.pascalCase(string));
