@@ -30,5 +30,6 @@ gulp.task('lint', function() {
 
 // Run JavaScript tests
 gulp.task('test', function() {
-  throw new Error("Gulp test not implemented");
-});
+  return gulp.src(['test/**/*Test.js'], { read: false })
+    .pipe(mocha());
+  });
