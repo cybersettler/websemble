@@ -24,7 +24,7 @@ function DAOImplementation(collectionName, PersistenceService) {
 
   this.findWhere = function(condition) {
     return this.getCollection.then(function(result) {
-      return DAOService.findInCollection(result.index, condition);
+      return DAOService.findResource(result.index, condition);
     });
   };
 
@@ -54,7 +54,7 @@ function DAOImplementation(collectionName, PersistenceService) {
     return this.getCollection.then(function(result) {
       DAOService.validate(result.schema, data);
       var index = result.idMap[id];
-      DAOService.updateInCollection(result.index, index, data);
+      DAOService.updateResource(result.index, index, data);
       PersistenceService.updateCollection(collectionName, result.index);
       return data;
     });
@@ -64,7 +64,7 @@ function DAOImplementation(collectionName, PersistenceService) {
     return this.getCollection.then(function(result) {
       DAOService.validate(result.schema, data);
       var index = result.idMap[id];
-      DAOService.updatePartiallyInCollection(result.index, index, data);
+      DAOService.updateResourcePartially(result.index, index, data);
       PersistenceService.updateCollection(collectionName, result.index);
       return data;
     });

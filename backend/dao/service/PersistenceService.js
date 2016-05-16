@@ -7,11 +7,19 @@
 const path = require("path");
 const memFs = require('mem-fs');
 const editor = require('mem-fs-editor');
-const store = memFs.create();
-const fs = editor.create(store);
 const Collection = require("../Collection.js");
 
 var basePath = __dirname;
+var fs = null;
+
+/**
+ * @private {function}
+ * @return {Object} Memory filesystem.
+ */
+function initFileSystem() {
+  const store = memFs.create();
+  return editor.create(store);
+}
 
 /**
  * @private {function}
@@ -33,6 +41,15 @@ function getSchemaPath(collectionName) {
 
 module.exports = {
   /**
+   * Initialize service.
+   * @param {string} appDataDir - Directory where collection data is kept.
+   * @param {Object} [filesystem] - Memory filesystem.
+   */
+  init: function(appDataDir, filesystem) {
+    basePath = appDataDir;
+    fs = filesystem || initFileSystem();
+  },
+  /**
    * Base path of resource collections setter.
    * @param {string} pathToCollections - Path to resource collections.
    */
@@ -47,7 +64,13 @@ module.exports = {
   readCollection: function(collectionName) {
     var indexPath = getIndexPath(collectionName);
     var schemaPath = getSchemaPath(collectionName);
+    if (!fs.exists(indexPath)) {
+      throw new Error("File " + indexPath + " does not exist.");
+    }
     var index = fs.readJSON(indexPath);
+    if (!fs.exists(schemaPath)) {
+      throw new Error("File " + schemaPath + " does not exist.");
+    }
     var schema = fs.readJSON(schemaPath);
     var result = new Collection(index, schema);
     return Promise.resolve(result);
@@ -56,7 +79,7 @@ module.exports = {
    * Update collection.
    * @param {string} collectionName - Collection name.
    * @param {Array} data - Array of resources.
-   * @return {Promise} Array of resources.
+   * @return {Promise} JSON string with array of resources.
    */
   updateCollection: function(collectionName, data) {
     var indexPath = getIndexPath(collectionName);

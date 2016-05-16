@@ -16,7 +16,7 @@ module.exports = {
    * @param {Object} condition - Filter.
    * @return {Array} List of resource that match the condition.
    */
-  findInCollection: function(collection, condition) {
+  findResource: function(collection, condition) {
     var result = [];
     var matcher = new Matcher(condition);
     collection.forEach(function(item) {
@@ -47,7 +47,7 @@ module.exports = {
   },
 
   /**
-   * @private {function}
+   * Validate collection data.
    * @param {Object} schema - Collection map.
    * @param {Object} data - Resource data.
    * @return {Object} Validation data.
@@ -57,7 +57,7 @@ module.exports = {
   },
 
   /**
-   * @private {function}
+   * Add resource to collection.
    * @param {Object} collection - Collection map.
    * @param {Object} data - Resource data.
    * @return {number} The index of the added resource in the collection.
@@ -70,12 +70,12 @@ module.exports = {
   },
 
   /**
-   * @private {function}
+   * Update resource.
    * @param {Object} collection - Collection map.
    * @param {number} index - Resource index in collection.
    * @param {Object} data - Resource data.
    */
-  updateInCollection: function(collection, index, data) {
+  updateResource: function(collection, index, data) {
     if (!index) {
       throw new Error("Resource with id " + data.id + " not found");
     }
@@ -83,13 +83,13 @@ module.exports = {
   },
 
   /**
-   * @private {function}
+   * Patch resource.
    * @param {Object} collection - Collection map.
    * @param {string} index - Resource index in collection array.
    * @param {Object} data - Resource data.
    * @return {number} The array index of the updated resource in the collection.
    */
-  updatePartiallyInCollection: function(collection, index, data) {
+  updateResourcePartially: function(collection, index, data) {
     if (!index) {
       throw new Error("Resource with id " + data.id + " not found");
     }
