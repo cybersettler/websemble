@@ -4,9 +4,9 @@
 
 const assert = require('chai').assert;
 const reqlib = require('app-root-path').require;
-const PersistenceService = reqlib('/backend/dao/service/PersistenceService.js');
 const appRoot = require("app-root-path");
 const path = require("path");
+const PersistenceService = reqlib('/backend/dao/service/PersistenceService.js');
 
 describe('PersistenceService', function() {
   var basePath = path.join(appRoot.toString(), "test", "mockdata");
