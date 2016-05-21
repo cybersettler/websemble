@@ -9,40 +9,47 @@ const DAOService = require("./service/DAOService.js");
  */
 function DAOImplementation(collectionName, PersistenceService) {
   this.collectionName = collectionName;
-
-  this.getCollection = PersistenceService.readCollection(collectionName)
+  this.afterGetCollection = PersistenceService.readCollection(collectionName)
     .then(function(result) {
       result.idMap = DAOService.generateIdMap(result.index);
       return result;
     });
 
+  this.getCollection = function() {
+    return this.afterGetCollection;
+  };
+
   this.findAll = function() {
-    return this.getCollection.then(function(result) {
+    return this.afterGetCollection.then(function(result) {
       return result.index;
     });
   };
 
   this.findWhere = function(condition) {
-    return this.getCollection.then(function(result) {
+    return this.afterGetCollection.then(function(result) {
       return DAOService.findResource(result.index, condition);
     });
   };
 
   this.findById = function(id) {
-    return this.getCollection.then(function(result) {
-      var item = result.idMap[id];
-      if (!item) {
+    return this.afterGetCollection.then(function(result) {
+      var itemIndex = result.idMap[id];
+      if (typeof itemIndex === "undefined") {
         return Promise.reject(
           new Error("Item with id " + id + " not found")
         );
       }
-      return item;
+      return result.index[itemIndex];
     });
   };
 
   this.create = function(data) {
-    return this.getCollection.then(function(result) {
-      DAOService.validate(result.schema, data);
+    return this.afterGetCollection.then(function(result) {
+      var validateResult = DAOService.validateResourceData(result.schema, data);
+      if (!validateResult.valid) {
+        throw new Error(validateResult.errors[0].message);
+      }
+      console.log("validate result", validateResult);
       var index = DAOService.addResource(result.index, data);
       result.idMap[data.id] = index;
       PersistenceService.updateCollection(collectionName, result.index);
@@ -51,8 +58,8 @@ function DAOImplementation(collectionName, PersistenceService) {
   };
 
   this.update = function(id, data) {
-    return this.getCollection.then(function(result) {
-      DAOService.validate(result.schema, data);
+    return this.afterGetCollection.then(function(result) {
+      DAOService.validateResourceData(result.schema, data);
       var index = result.idMap[id];
       DAOService.updateResource(result.index, index, data);
       PersistenceService.updateCollection(collectionName, result.index);
@@ -61,8 +68,8 @@ function DAOImplementation(collectionName, PersistenceService) {
   };
 
   this.updatePartially = function(id, data) {
-    return this.getCollection.then(function(result) {
-      DAOService.validate(result.schema, data);
+    return this.afterGetCollection.then(function(result) {
+      DAOService.validateResourceData(result.schema, data);
       var index = result.idMap[id];
       DAOService.updateResourcePartially(result.index, index, data);
       PersistenceService.updateCollection(collectionName, result.index);
@@ -71,7 +78,7 @@ function DAOImplementation(collectionName, PersistenceService) {
   };
 
   this.delete = function(id) {
-    return this.getCollection.then(function(result) {
+    return this.afterGetCollection.then(function(result) {
       var index = result.idMap[id];
       var deleted = result.index.splice(index, 1);
       result.idMap = DAOService.generateIdMap(result.index);
@@ -81,7 +88,7 @@ function DAOImplementation(collectionName, PersistenceService) {
   };
 
   this.getSchema = function() {
-    return this.getCollection.then(function(result) {
+    return this.afterGetCollection.then(function(result) {
       return result.schema;
     });
   };

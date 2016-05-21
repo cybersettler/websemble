@@ -52,7 +52,7 @@ module.exports = {
    * @param {Object} data - Resource data.
    * @return {Object} Validation data.
    */
-  validateItem: function(schema, data) {
+  validateResourceData: function(schema, data) {
     return tv4.validateMultiple(data, schema);
   },
 

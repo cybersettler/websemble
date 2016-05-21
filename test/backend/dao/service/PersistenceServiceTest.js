@@ -19,13 +19,13 @@ describe('PersistenceService', function() {
           assert.equal(2,result.index.length);
           assert.equal(2,result.index[0].id);
           done();
-      }, done);
+      }).catch(done);
     });
     it("Collection has schema", function(done){
       readCollection.then(function(result) {
-          assert.equal("Product set",result.schema.title);
+          assert.equal("Product",result.schema.title);
           done();
-        }, done);
+        }).catch(done);
     });
   });
   describe("#updateCollection()",function(){
