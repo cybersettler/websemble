@@ -44,46 +44,49 @@ function DAOImplementation(collectionName, PersistenceService) {
   };
 
   this.create = function(data) {
+    var index = null;
     return this.afterGetCollection.then(function(result) {
-      var validateResult = DAOService.validateResourceData(result.schema, data);
-      if (!validateResult.valid) {
-        throw new Error(validateResult.errors[0].message);
-      }
-      console.log("validate result", validateResult);
-      var index = DAOService.addResource(result.index, data);
+      validateResourceData(result.schema, data);
+      index = DAOService.addResource(result.index, data);
       result.idMap[data.id] = index;
-      PersistenceService.updateCollection(collectionName, result.index);
-      return result.index[index];
+      return PersistenceService.updateCollection(collectionName, result.index);
+    }).then(function(result) {
+      var collection = JSON.parse(result);
+      return collection[index];
     });
   };
 
   this.update = function(id, data) {
+    var index = null;
     return this.afterGetCollection.then(function(result) {
-      DAOService.validateResourceData(result.schema, data);
-      var index = result.idMap[id];
+      validateResourceData(result.schema, data);
+      index = result.idMap[id];
       DAOService.updateResource(result.index, index, data);
-      PersistenceService.updateCollection(collectionName, result.index);
-      return data;
+      return PersistenceService.updateCollection(collectionName, result.index);
+    }).then(function(result) {
+      var collection = JSON.parse(result);
+      return collection[index];
     });
   };
 
   this.updatePartially = function(id, data) {
+    var implementation = this;
     return this.afterGetCollection.then(function(result) {
-      DAOService.validateResourceData(result.schema, data);
       var index = result.idMap[id];
-      DAOService.updateResourcePartially(result.index, index, data);
-      PersistenceService.updateCollection(collectionName, result.index);
-      return data;
+      var patched = DAOService.patchResource(result.index, index, data);
+      return implementation.update(id, patched);
     });
   };
 
   this.delete = function(id) {
     return this.afterGetCollection.then(function(result) {
       var index = result.idMap[id];
-      var deleted = result.index.splice(index, 1);
+      result.index.splice(index, 1);
       result.idMap = DAOService.generateIdMap(result.index);
-      PersistenceService.updateCollection(collectionName, result.index);
-      return deleted[0];
+      return PersistenceService.updateCollection(collectionName,
+        result.index);
+    }).then(function() {
+      return 1;
     });
   };
 
@@ -92,6 +95,13 @@ function DAOImplementation(collectionName, PersistenceService) {
       return result.schema;
     });
   };
+}
+
+function validateResourceData(schema, data) {
+  var validateResult = DAOService.validateResourceData(schema, data);
+  if (!validateResult.valid) {
+    throw new Error(validateResult.errors[0].message);
+  }
 }
 
 module.exports = DAOImplementation;

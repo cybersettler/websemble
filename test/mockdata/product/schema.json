@@ -5,7 +5,7 @@
   "properties": {
     "id": {
       "description": "The unique identifier for a product",
-      "type": "number"
+      "type": "string"
     },
     "name": {
       "type": "string"

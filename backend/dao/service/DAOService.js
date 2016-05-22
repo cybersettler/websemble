@@ -3,8 +3,9 @@
  * @module dao/service/DAOService
  */
 
+const reqlib = require('app-root-path').require;
+const JsonUtil = reqlib("/util/JsonUtil.js");
 const Matcher = require("./Matcher.js");
-const JsonUtil = require('app-root-path').resolve("/util/JsonUtil.js");
 const tv4 = require('tv4');
 const shortid = require('shortid');
 
@@ -76,27 +77,21 @@ module.exports = {
    * @param {Object} data - Resource data.
    */
   updateResource: function(collection, index, data) {
-    if (!index) {
+    if (typeof index === "undefined") {
       throw new Error("Resource with id " + data.id + " not found");
     }
     collection[index] = data;
   },
 
-  /**
-   * Patch resource.
-   * @param {Object} collection - Collection map.
-   * @param {string} index - Resource index in collection array.
-   * @param {Object} data - Resource data.
-   * @return {number} The array index of the updated resource in the collection.
-   */
-  updateResourcePartially: function(collection, index, data) {
-    if (!index) {
+  patchResource: function(collection, index, data) {
+    if (typeof index === "undefined") {
       throw new Error("Resource with id " + data.id + " not found");
     }
-    var copy = JsonUtil.clone(data);
 
-    Object.getOwnPropertyNames(copy).forEach(function(prop) {
-      collection[index][prop] = copy[prop];
+    var copy = JsonUtil.cloneObject(collection[index]);
+
+    Object.getOwnPropertyNames(data).forEach(function(prop) {
+      copy[prop] = data[prop];
     });
 
     return copy;

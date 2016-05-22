@@ -86,23 +86,67 @@ describe('DAOImplementation', function() {
     function(done) {
       implementation.create(invalidSampleProduct).then(
         function(result) {
-          console.log("Create invalid product",result);
           assert.isUndefined(result);
           done();
         }, function(err) {
-          console.log("Error creating invalid product",err);
           assert.isDefined(err);
           done();
         }).catch(done);
     });
   });
-  xdescribe("#update()",function(){
-    it("returns an array",function(done){});
+  describe("#update()",function() {
+    it("returns the updated record", function(done) {
+      implementation.findById(3).then(function(result) {
+        assert.isDefined(result);
+        assert.equal("A blue mouse",result.name);
+        result.name = "A blue mouse updated";
+        return implementation.update(3,result);
+      }).then(function(result) {
+        assert.isDefined(result);
+        assert.equal("A blue mouse updated",result.name);
+        done();
+      }).catch(done);
+    });
+    it("should not be possible to updated resource with invalid data",
+    function(done) {
+      implementation.findById(3).then(function(result) {
+        assert.isDefined(result);
+        assert.equal("A blue mouse",result.name);
+        delete result.price;
+        return implementation.update(3,result);
+      }).then(function(result) {
+        assert.isUndefined(result);
+        done();
+      }).catch(function(err) {
+        assert.isDefined(err);
+        done();
+      });
+    });
   });
-  xdescribe("#updatePartially()",function(){
-    it("returns an array",function(done){});
+  describe("#updatePartially()",function(){
+    it("returns the updated record", function(done) {
+      var patch = {name: "An ice sculpture updated"};
+      implementation.updatePartially(2,patch).then(function(result) {
+        assert.isDefined(result);
+        assert.equal("An ice sculpture updated",result.name);
+        assert.equal(12.50,result.price);
+        done();
+      }).catch(done);
+    });
   });
-  xdescribe("#delete()",function(){
-    it("returns an array",function(done){});
+  describe("#delete()",function(){
+    it("returns number of deleted resources",function(done){
+      implementation.create({name: "Rubber duck", price: 0.99}).then(
+        function(result) {
+          assert.isDefined(result);
+          assert.isDefined(result.id);
+          assert.equal("Rubber duck", result.name);
+          assert.equal(0.99, result.price);
+          return implementation.delete(result.id);
+        }).then(function(result) {
+          assert.equal(1,result);
+          done();
+        }).catch(done);
+    });
   });
 });
