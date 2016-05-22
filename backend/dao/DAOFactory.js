@@ -5,15 +5,18 @@
 
  const DAOImplementation = require("./DAOImplementation.js");
  const catalog = {};
- const PersistenceService = require('./PersistenceService.js');
+ var PersistanceService = null;
 
  module.exports = {
+   init: function(Service) {
+     PersistenceService = Service;
+   },
    /**
     * Returns a DAOInstance of the collection.
     * @param {string} collectionName - Collection name.
     * @return {DAOImplementation} DAO implementation.
     */
-   getDAOInstance: function(collectionName) {
+   getInstance: function(collectionName) {
      if (!catalog[collectionName]) {
        catalog[collectionName] = new DAOImplementation(collectionName, PersistenceService);
      }

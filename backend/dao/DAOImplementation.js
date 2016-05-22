@@ -61,6 +61,10 @@ function DAOImplementation(collectionName, PersistenceService) {
     return this.afterGetCollection.then(function(result) {
       validateResourceData(result.schema, data);
       index = result.idMap[id];
+      data.id = id; // This is to prevent that an id attribute
+                    // posted with the data
+                    // overwrites the id of the resource, thus
+                    // potentially creating an inconsistency
       DAOService.updateResource(result.index, index, data);
       return PersistenceService.updateCollection(collectionName, result.index);
     }).then(function(result) {

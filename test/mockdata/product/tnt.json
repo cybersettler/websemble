@@ -1,0 +1,14 @@
+{
+    "name": "TNT",
+    "price": 42.99,
+    "tags": ["explosive"],
+    "dimensions": {
+        "length": 0.25,
+        "width": 0.25,
+        "height": 0.5
+    },
+    "warehouseLocation": {
+        "latitude": -78.75,
+        "longitude": 20.4
+    }
+}

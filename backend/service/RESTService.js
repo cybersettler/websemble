@@ -3,8 +3,10 @@
  * @module service/RESTService
  */
 
-const DAOFactory = require('../dao/DAOFactory.js');
-const RESTResponse = require('./RESTRespinse.js');
+const reqlib = require('app-root-path').require;
+const DAOFactory = reqlib('/backend/dao/DAOFactory.js');
+const RESTResponse = require('./RESTResponse.js');
+const PersistenceService = reqlib('/backend/dao/service/PersistenceService.js');
 
 function parseRequest(request) {
   var parts = decodeURI(request).split("?");
@@ -49,6 +51,10 @@ function parseQuery(queryString) {
 }
 
 module.exports = {
+  init: function(config) {
+    PersistenceService.init(config.appDataDir);
+    DAOFactory.init(PersistenceService);
+  },
   /**
    * Handle GET request.
    * @param {string} url - Resource locator.
@@ -67,8 +73,8 @@ module.exports = {
         function(result) {
           return new RESTResponse(url, "GET", result);
         });
-    } else if (request.resource.query) {
-      return collection.findWhere(request.resource.query).then(
+    } else if (request.query) {
+      return collection.findWhere(request.query).then(
         function(result) {
           return new RESTResponse(url, "GET", result);
         });
