@@ -5,7 +5,7 @@
 
  const DAOImplementation = require("./DAOImplementation.js");
  const catalog = {};
- var PersistanceService = null;
+ var PersistenceService = null;
 
  module.exports = {
    init: function(Service) {
