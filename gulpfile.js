@@ -12,6 +12,8 @@ var gulp = require('gulp'),
     fs = require('fs'),
     parseArgs = require('minimist');
 
+const local = JSON.parse(fs.readFileSync('./local.json', 'utf8'));
+
 gulp.task('default',['lint','test'],function() {
   console.log(chalk.green("Build successful"));
 });
@@ -47,7 +49,8 @@ gulp.task('changelog', function () {
     buffer: false
   })
     .pipe(conventionalChangelog({
-      preset: 'angular' // Or to any other commit message convention you use.
+      preset: 'angular', // Or to any other commit message convention you use.
+      releaseCount: 0
     }))
     .pipe(gulp.dest('./'));
 });
@@ -55,7 +58,7 @@ gulp.task('changelog', function () {
 gulp.task('github-release', function(done) {
   conventionalGithubReleaser({
     type: "oauth",
-    token: 'c262f57d5aeb6f3924be50cebc70b73c6b184664' // change this to your own GitHub token or use an environment variable
+    token: local.oauth.token // change this to your own GitHub token or use an environment variable
   }, {
     preset: 'angular' // Or to any other commit message convention you use.
   }, done);
