@@ -12,8 +12,6 @@ var gulp = require('gulp'),
     fs = require('fs'),
     parseArgs = require('minimist');
 
-const local = JSON.parse(fs.readFileSync('./local.json', 'utf8'));
-
 gulp.task('default',['lint','test'],function() {
   console.log(chalk.green("Build successful"));
 });
@@ -56,6 +54,7 @@ gulp.task('changelog', function () {
 });
 
 gulp.task('github-release', function(done) {
+  const local = JSON.parse(fs.readFileSync('./local.json', 'utf8'));
   conventionalGithubReleaser({
     type: "oauth",
     token: local.oauth.token // change this to your own GitHub token or use an environment variable
