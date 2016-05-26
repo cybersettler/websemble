@@ -55,7 +55,7 @@ gulp.task('changelog', function () {
 gulp.task('github-release', function(done) {
   conventionalGithubReleaser({
     type: "oauth",
-    token: '0126af95c0e2d9b0a7c78738c4c00a860b04acc8' // change this to your own GitHub token or use an environment variable
+    token: 'c262f57d5aeb6f3924be50cebc70b73c6b184664' // change this to your own GitHub token or use an environment variable
   }, {
     preset: 'angular' // Or to any other commit message convention you use.
   }, done);
@@ -66,7 +66,7 @@ gulp.task('bump-version', function () {
 // use minimist (https://www.npmjs.com/package/minimist) to determine with a
 // command argument whether you are doing a 'major', 'minor' or a 'patch' change.
   var argv = parseArgs(process.argv.slice(2));
-  var versionType = argv._[0] || "patch";
+  var versionType = argv.version || "patch";
   return gulp.src(['./bower.json', './package.json'])
     .pipe(bump({type: versionType}).on('error', gutil.log))
     .pipe(gulp.dest('./'));
