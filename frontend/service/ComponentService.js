@@ -7,8 +7,16 @@
 
 const appRoot = require('app-root-path');
 const reqlib = appRoot.require;
+const path = require("path");
 const ClassUtil = reqlib("/util/ClassUtil.js");
 const StringUtil = reqlib("/util/StringUtil.js");
+
+function getFrontEndPath() {
+  if (window && window.FRONTEND_PATH) {
+    return window.FRONTEND_PATH;
+  }
+  return path.join(appRoot.toString(), 'frontend');
+}
 
 function getComponentPath(componentTag) {
   var match = /^(\w+)[-](.*)/.exec(componentTag);
@@ -19,7 +27,8 @@ function getComponentPath(componentTag) {
     });
 
   var namespace = match[1];
-  return appRoot + '/frontend/component/' + namespace + '/' + componentName + '/';
+  var frontendPath = getFrontEndPath();
+  return path.join(frontendPath, 'component', namespace, componentName, "/");
 }
 
 module.exports = {

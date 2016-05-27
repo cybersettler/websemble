@@ -30,6 +30,7 @@
     "gulp-mocha": "^2.2.0",
     "gulp-util": "^3.0.7",
     "minimist": "^1.2.0",
+    "node-browser-environment": "^1.1.0",
     "run-sequence": "^1.2.1"
   },
   "repository": {
