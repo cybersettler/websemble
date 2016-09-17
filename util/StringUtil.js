@@ -14,7 +14,7 @@ module.exports = {
   pascalCase: function(string) {
     var util = this;
     return string.match(/([A-Za-z]+)/g).reduce(parse);
-    function parse(prev, current, index) {
+    function parse(prev, current, index) { // eslint-disable-line require-jsdoc
       if (index === 1) {
         return util.capitalize(prev) + util.capitalize(current);
       }

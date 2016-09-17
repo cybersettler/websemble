@@ -5,7 +5,7 @@
 
  /* eslint-env browser */
 
-function addShadowRootTemplate(view, controller) {
+function addShadowRootTemplate(view, controller) { // eslint-disable-line require-jsdoc
   if (!controller.scope.shadowTemplate) {
     return;
   }
@@ -23,7 +23,7 @@ function addShadowRootTemplate(view, controller) {
   root.appendChild(clone);
 }
 
-function addMainTemplate(view, controller) {
+function addMainTemplate(view, controller) { // eslint-disable-line require-jsdoc
   if (!controller.scope.mainTemplate) {
     return;
   }

@@ -3,7 +3,7 @@ const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 const appRoot = require('app-root-path');
 const RESTService = require('./backend/service/RESTService.js');
-const RESTResponse = require('.backend/service/RESTResponse');
+const RESTResponse = require('./backend/service/RESTResponse');
 
 /**
  * Entry point of the Electron application.

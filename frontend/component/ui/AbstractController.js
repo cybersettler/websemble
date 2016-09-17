@@ -3,8 +3,7 @@
  * @namespace UI
  */
 
-const reqlib = require('app-root-path').require;
-const StringUtil = reqlib("/util/StringUtil.js");
+const StringUtil = require("../../../util/StringUtil.js");
 
 /**
  * Abstract controller extended by ui controllers.
@@ -64,7 +63,7 @@ AbstractController.prototype.fetchModel = function() {
   return this.dispatch(params, this.scope.parentViewName);
 };
 
-function isViewComponent(el) {
+function isViewComponent(el) { // eslint-disable-line require-jsdoc
   return /^view/.test(el.tagName.toLowerCase());
 }
 

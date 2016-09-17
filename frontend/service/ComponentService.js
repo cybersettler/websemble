@@ -6,19 +6,18 @@
 /* eslint-env browser */
 
 const appRoot = require('app-root-path');
-const reqlib = appRoot.require;
 const path = require("path");
-const ClassUtil = reqlib("/util/ClassUtil.js");
-const StringUtil = reqlib("/util/StringUtil.js");
+const ClassUtil = require("../../util/ClassUtil.js");
+const StringUtil = require("../../util/StringUtil.js");
 
-function getFrontEndPath() {
+function getFrontEndPath() { // eslint-disable-line require-jsdoc
   if (window && window.FRONTEND_PATH) {
     return window.FRONTEND_PATH;
   }
   return path.join(appRoot.toString(), 'frontend');
 }
 
-function getComponentPath(componentTag) {
+function getComponentPath(componentTag) { // eslint-disable-line require-jsdoc
   var match = /^(\w+)[-](.*)/.exec(componentTag);
   var componentName = StringUtil.camelCase(
     match[2]).replace(/^(.)/,

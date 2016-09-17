@@ -7,7 +7,7 @@ const ComponentService = require("./ComponentService.js");
 const ComponentFactory = require("../factory/ComponentFactory.js");
 const AbstractUIController = require("../component/ui/AbstractController.js");
 
-function addOnAttachedCallback(view, controller, app) {
+function addOnAttachedCallback(view, controller, app) { // eslint-disable-line require-jsdoc
   view.onAttached = function() {
     controller.dispatch = function(params) {
       return app.dispatch(params, controller.scope.parentViewName);

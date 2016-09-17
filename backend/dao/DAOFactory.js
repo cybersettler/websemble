@@ -18,7 +18,8 @@
     */
    getInstance: function(collectionName) {
      if (!catalog[collectionName]) {
-       catalog[collectionName] = new DAOImplementation(collectionName, PersistenceService);
+       catalog[collectionName] = new DAOImplementation(collectionName,
+         PersistenceService);
      }
      return catalog[collectionName];
    }

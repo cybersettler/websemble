@@ -3,12 +3,11 @@
  * @module service/RESTService
  */
 
-const reqlib = require('app-root-path').require;
-const DAOFactory = reqlib('/backend/dao/DAOFactory.js');
+const DAOFactory = require('../dao/DAOFactory.js');
 const RESTResponse = require('./RESTResponse.js');
-const PersistenceService = reqlib('/backend/dao/service/PersistenceService.js');
+const PersistenceService = require('../dao/service/PersistenceService.js');
 
-function parseRequest(request) {
+function parseRequest(request) { // eslint-disable-line require-jsdoc
   var parts = decodeURI(request).split("?");
   var uri = parts[0];
   var resource = parseResource(uri);
@@ -23,9 +22,8 @@ function parseRequest(request) {
   };
 }
 
-function parseResource(uri) {
+function parseResource(uri) { // eslint-disable-line require-jsdoc
   var result = {};
-  // TODO: refactor way to get URI parts and their namings
   var parts = uri.split("/");
   result.collection = parts[0];
   if (parts.length > 1) {
@@ -37,11 +35,11 @@ function parseResource(uri) {
   return result;
 }
 
-function parseQuery(queryString) {
+function parseQuery(queryString) { // eslint-disable-line require-jsdoc
   var data = decodeURIComponent(queryString).split("&");
   var result = {};
   data.forEach(setAttribute);
-  function setAttribute(item) {
+  function setAttribute(item) { // eslint-disable-line require-jsdoc
     var parts = item.split("=");
     var key = parts[0].trim();
     var value = parts[1].trim();

@@ -101,7 +101,7 @@ function DAOImplementation(collectionName, PersistenceService) {
   };
 }
 
-function validateResourceData(schema, data) {
+function validateResourceData(schema, data) { // eslint-disable-line require-jsdoc
   var validateResult = DAOService.validateResourceData(schema, data);
   if (!validateResult.valid) {
     throw new Error(validateResult.errors[0].message);

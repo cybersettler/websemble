@@ -5,9 +5,10 @@
 
 const ComponentService = require("./ComponentService.js");
 const ComponentFactory = require("../factory/ComponentFactory.js");
-const AbstractViewController = require("../component/view/AbstractController.js");
+const AbstractViewController = require(
+  "../component/view/AbstractController.js");
 
-function addOnAttachedCallback(view, controller, app) {
+function addOnAttachedCallback(view, controller, app) { // eslint-disable-line require-jsdoc
   view.onAttached = function() {
     app.registerView({
       elementName: view.tagName.toLowerCase(),
@@ -20,7 +21,7 @@ function addOnAttachedCallback(view, controller, app) {
   };
 }
 
-function addOnDetachedCallback(view, controller, app) {
+function addOnDetachedCallback(view, controller, app) { // eslint-disable-line require-jsdoc
   view.onDetached = function() {
     app.unregisterView({elementName: view.tagName.toLowerCase()});
     if (controller.onDetached) {

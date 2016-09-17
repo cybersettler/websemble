@@ -3,8 +3,7 @@
  * @module dao/service/DAOService
  */
 
-const reqlib = require('app-root-path').require;
-const JsonUtil = reqlib("/util/JsonUtil.js");
+const JsonUtil = require("../../../util/JsonUtil.js");
 const Matcher = require("./Matcher.js");
 const tv4 = require('tv4');
 const shortid = require('shortid');

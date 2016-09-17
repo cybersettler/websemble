@@ -9,7 +9,7 @@ function Matcher(condition) {
   this.match = function(item) {
     var result = true;
     this.queryFields.some(checkFieldMatch);
-    function checkFieldMatch(key) {
+    function checkFieldMatch(key) { // eslint-disable-line require-jsdoc
       if (typeof item[key] === "undefined" ||
       condition[key] != item[key]) { // eslint-disable-line eqeqeq
         result = false;
