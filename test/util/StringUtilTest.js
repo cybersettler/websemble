@@ -1,6 +1,6 @@
 const assert = require('chai').assert;
 const reqlib = require('app-root-path').require;
-const StringUtil = reqlib('/util/StringUtil.js');
+const StringUtil = require('../../util/StringUtil.js');
 
 describe('StringUtil', function() {
   describe('#capitalize(string)', function () {
