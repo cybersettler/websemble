@@ -3,6 +3,8 @@
  * @module frontend/service/ComponentFacade
  */
 
+ /* eslint-env browser */
+
 const Service = require("./ComponentService.js");
 const ViewComponentService = require("./ViewComponentService.js");
 const UIComponentService = require("./UIComponentService.js");
@@ -25,6 +27,7 @@ module.exports = {
       return;
     }
     afterAppCreated = AppComponentService.createComponent();
+    return afterAppCreated;
   },
   createViewComponent: function(elementName) {
     createComponent(elementName, ViewComponentService);

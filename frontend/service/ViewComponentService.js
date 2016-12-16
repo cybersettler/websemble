@@ -75,6 +75,7 @@ module.exports = {
 };
 
 function getNavigationDataFromUrl(url) { // eslint-disable-line require-jsdoc
+  "use strict";
   var pattern = /view\/(\w+)\/?([?].*)?/;
   if (!pattern.test(url)) {
     throw new Error("URL pattern not supported: " + url);

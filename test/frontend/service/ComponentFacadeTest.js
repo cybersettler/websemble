@@ -18,17 +18,19 @@ document.registerElement = function(elementName, config){
 document._currentScript = document.createElement("script");
 
 describe('ComponentFacade', function(){
+  var afterAppCreated;
   before(function() {
-    Facade.createAppComponent();
+    afterAppCreated = Facade.createAppComponent();
 //    document.components["core-app"].prototype.createdCallback();
   });
   describe('#createAppComponent', function() {
-    it("generates core-app component", function() {
-      assert.isDefined(window.appComponent);
-/**      window.appComponent.afterElementAttached.then(function(app) {
+    it("generates core-app component", function(done) {
+      assert.isDefined(afterAppCreated);
+      done();
+    /*  afterAppCreated.then(function(app) {
         assert.isDefined(app);
         done();
-      }).catch(done); **/
+      }).catch(done); */
     });
   });
 });
