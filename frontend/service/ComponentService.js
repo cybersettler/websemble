@@ -9,6 +9,7 @@ const appRoot = require('app-root-path');
 const path = require("path");
 const ClassUtil = require("../../util/ClassUtil.js");
 const StringUtil = require("../../util/StringUtil.js");
+var afterAppComponentAttached;
 
 function getFrontEndPath() { // eslint-disable-line require-jsdoc
   if (window && window.FRONTEND_PATH) {
@@ -44,18 +45,18 @@ module.exports = {
 
     // Sets scope variables
     ViewController.prototype.scope = {
-      localContext: localContext
+      _localContext: localContext
     };
 
     var mainTemplate = localContext.querySelector('template.main');
     var shadowTemplate = localContext.querySelector('template.shadow');
 
     if (mainTemplate) {
-      ViewController.prototype.scope.mainTemplate = mainTemplate.content;
+      ViewController.prototype.scope._mainTemplate = mainTemplate.content;
     }
 
     if (shadowTemplate) {
-      ViewController.prototype.scope.shadowTemplate = shadowTemplate.content;
+      ViewController.prototype.scope._shadowTemplate = shadowTemplate.content;
     }
 
     return ViewController;
@@ -67,7 +68,10 @@ module.exports = {
 
     // Fires when an instance was inserted into the document
     elementProto.attachedCallback = function() {
-      console.log("Element attached", this.tagName);
+      var tag = this.tagName.toLowerCase();
+      console.log("Element attached", tag);
+      var event = new Event(tag + " attached");
+      document.dispatchEvent(event);
       this.onAttached();
     };
 
@@ -115,5 +119,17 @@ module.exports = {
       prototype: elementProto
     });
     return Constructor;
+  },
+
+  getAfterAppComponentAttached: function() {
+    if (!afterAppComponentAttached) {
+      afterAppComponentAttached = new Promise(function(fulfill) {
+        document.attachEventListener("core-app attached", function(e) {
+          fulfill(e);
+        });
+      });
+    }
+
+    return afterAppComponentAttached;
   }
 };

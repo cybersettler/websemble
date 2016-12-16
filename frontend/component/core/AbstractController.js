@@ -3,6 +3,8 @@
  * @namespace Core
  */
 
+ /* global document, Event */
+
 /**
  * Abstract controller extended by core-app controller.
  * @constructor
@@ -15,6 +17,13 @@ function AbstractController(args) {
   const remote = electron.remote;
   const Menu = remote.Menu;
   const BackendService = require("../../service/BackendService.js");
+  const actionMap = {
+    get: "doGet",
+    post: "doPost",
+    put: "doPut",
+    patch: "doPatch",
+    delete: "doDelete"
+  };
 
   /** @member { HTMLElement } */
   this.view = args[0];
@@ -74,6 +83,8 @@ function AbstractController(args) {
    */
   this.registerView = function(params) {
     this.scope.views[params.elementName] = params.viewController;
+    var event = new Event(params.elementName + " registered");
+    document.dispatchEvent(event);
     return this;
   };
 
@@ -123,18 +134,20 @@ function AbstractController(args) {
 
   /**
    * Dispatches an event.
-   * @param { Object } data - Event data.
-   * @param { string } data.action - Event name.
-   * @param { string } target - Event target.
+   * @param { Object } event - Event data.
+   * @param { string } event.name - HTTP action GET, POST, PUT, PATCH or DELETE.
+   * @param { string } event.target - Event target.
+   * @param { string } event.source - Event source.
    * @return { Promise } A promise.
    */
-  this.dispatch = function(data, target) {
-    if (!target) {
-      return this[data.action](data);
+  this.dispatch = function(event) {
+    if (event.target === "app") {
+      var action = actionMap[event.name];
+      return this[action](event);
     }
 
-    var viewController = this.getViewController(target);
-    return viewController[data.action](data);
+    var viewController = this.getViewController(event.target);
+    return viewController[event.name](event);
   };
 
   /**
@@ -147,11 +160,20 @@ function AbstractController(args) {
   };
 
   /**
+   * Returns the scope of a component.
+   * @param { string } tag - HTML element tag name.
+   * @return { Object } Component scope.
+   */
+  this.getViewScope = function(tag) {
+    return this.getViewController(tag).scope;
+  };
+
+  /**
    * Makes a get request to the backend.
    * @param { Object } params - Get request data.
    * @return { Promise } The response.
    */
-  this.getRequest = function(params) {
+  this.doGet = function(params) {
     return BackendService.get(params);
   };
 
@@ -160,7 +182,7 @@ function AbstractController(args) {
    * @param { Object } params - Post data.
    * @return { Promise } The response.
    */
-  this.postRequest = function(params) {
+  this.doPost = function(params) {
     return BackendService.post(params.ref, params.data);
   };
 
@@ -169,7 +191,7 @@ function AbstractController(args) {
    * @param { Object } params - Put data.
    * @return { Promise } The response.
    */
-  this.putRequest = function(params) {
+  this.doPut = function(params) {
     return BackendService.put(params.ref, params.data);
   };
 
@@ -178,7 +200,7 @@ function AbstractController(args) {
    * @param { Object } params - Post data.
    * @return { Promise } The response.
    */
-  this.patchRequest = function(params) {
+  this.doPatch = function(params) {
     return BackendService.patch(params.ref, params.data);
   };
 
@@ -187,7 +209,7 @@ function AbstractController(args) {
    * @param { Object } params - Delete data.
    * @return { Promise } The response.
    */
-  this.deleteRequest = function(params) {
+  this.doDelete = function(params) {
     return BackendService.delete(params.ref);
   };
 

@@ -6,7 +6,7 @@
  /* eslint-env browser */
 
 function addShadowRootTemplate(view, controller) { // eslint-disable-line require-jsdoc
-  if (!controller.scope.shadowTemplate) {
+  if (!controller.scope._shadowTemplate) {
     return;
   }
 
@@ -19,15 +19,15 @@ function addShadowRootTemplate(view, controller) { // eslint-disable-line requir
   }
 
   // Adds a template clone into shadow root
-  var clone = document.importNode(controller.scope.shadowTemplate, true);
+  var clone = document.importNode(controller.scope._shadowTemplate, true);
   root.appendChild(clone);
 }
 
 function addMainTemplate(view, controller) { // eslint-disable-line require-jsdoc
-  if (!controller.scope.mainTemplate) {
+  if (!controller.scope._mainTemplate) {
     return;
   }
-  var clone = document.importNode(controller.scope.mainTemplate, true);
+  var clone = document.importNode(controller.scope._mainTemplate, true);
   view.appendChild(clone);
 }
 

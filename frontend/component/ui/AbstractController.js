@@ -3,7 +3,7 @@
  * @namespace UI
  */
 
-const StringUtil = require("../../../util/StringUtil.js");
+ /* global document */
 
 /**
  * Abstract controller extended by ui controllers.
@@ -34,15 +34,21 @@ AbstractController.prototype.getParentView = function() {
 
 AbstractController.prototype.onAttached = function() {
   var parentView = this.getParentView();
-
+  var parentViewName = parentView.tagName.toLowerCase();
   this.scope.parentView = parentView;
-  this.scope.parentViewName = parentView.tagName.toLowerCase();
+
+  this.scope.afterParentViewAttached = new Promise(function(resolve) {
+    document.addEventListener(parentViewName + " attached", function(e) {
+      console.log("parent view attached", e);
+      resolve(e);
+    });
+  });
 
   if (this.view.hasAttribute("data-model")) {
     var controller = this;
     this.fetchModel().then(
       function(model) {
-        controller.model[controller.view.dataset.model] = model;
+        controller.model = model;
         controller.updateView();
       }
     );
@@ -57,10 +63,15 @@ AbstractController.prototype.onAttached = function() {
  * @return { Promise } A promise.
  */
 AbstractController.prototype.fetchModel = function() {
-  var params = {
-    action: "get" + StringUtil.capitalize(this.view.dataset.model)
-  };
-  return this.dispatch(params, this.scope.parentViewName);
+  var parentScope = this.getParentViewScope();
+  return this.view.dataset.model.split('.').reduce(function(scope, property) {
+    if (scope.then) {
+      return scope.then(function(result) {
+        return result[property];
+      });
+    }
+    return Promise.resolve(scope[property]);
+  }, parentScope);
 };
 
 function isViewComponent(el) { // eslint-disable-line require-jsdoc

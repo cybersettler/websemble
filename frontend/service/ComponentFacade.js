@@ -3,24 +3,28 @@
  * @module frontend/service/ComponentFacade
  */
 
-/* eslint-env browser */
-
 const Service = require("./ComponentService.js");
 const ViewComponentService = require("./ViewComponentService.js");
 const UIComponentService = require("./UIComponentService.js");
-const App = require("./AppComponent");
+const AppComponentService = require("./AppComponentService.js");
+var afterAppCreated;
 
 function createComponent(elementName, ComponentTypeService) { // eslint-disable-line require-jsdoc
   var elementProto = ComponentTypeService.createComponent(elementName,
-    window.appComponent);
+    afterAppCreated);
   var Constructor = Service.registerElement(elementName, elementProto);
-  window.appComponent.registerElement({
-    elementName: elementName, elementConstructor: Constructor});
+  afterAppCreated.then(function(app) {
+    app.registerElement({
+      elementName: elementName, elementConstructor: Constructor});
+  });
 }
 
 module.exports = {
   createAppComponent: function() {
-    window.appComponent = new App();
+    if (afterAppCreated) {
+      return;
+    }
+    afterAppCreated = AppComponentService.createComponent();
   },
   createViewComponent: function(elementName) {
     createComponent(elementName, ViewComponentService);
