@@ -1,5 +1,15 @@
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/cybersettler/websemble/compare/v1.0.0...v1.0.1) (2016-12-17)
+
+
+
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/cybersettler/websemble/compare/0.5.5...v1.0.0) (2016-12-16)
+
+
+
 <a name="0.5.5"></a>
-## [0.5.5](https://github.com/cybersettler/websemble/compare/0.5.3...v0.5.5) (2016-11-19)
+## [0.5.5](https://github.com/cybersettler/websemble/compare/0.5.3...0.5.5) (2016-11-19)
 
 
 
