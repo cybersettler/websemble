@@ -80,9 +80,9 @@ function getNavigationDataFromUrl(url) { // eslint-disable-line require-jsdoc
   if (!pattern.test(url)) {
     throw new Error("URL pattern not supported: " + url);
   }
-  var match = pattern.exec(pattern);
+  var match = pattern.exec(url);
   var result = {
-    elementName: 'view-' + match[1]
+    elementName: 'view-' + match[1].toLowerCase()
   };
   if (match[2]) {
     setParams(match[2].replace('?', ''));

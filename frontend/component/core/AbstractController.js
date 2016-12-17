@@ -233,7 +233,7 @@ function AbstractController(args) {
    */
   this.setView = function(params) {
     this.clearViews();
-    this.addView({elementName: params.view});
+    this.addView({elementName: params.elementName});
     return this;
   };
 
