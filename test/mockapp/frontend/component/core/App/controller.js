@@ -1,4 +1,4 @@
-function AppController( view, model ){
+function AppController( view, scope ){
 
   // Controller constructor is called when an instance
   // of the html element is created
@@ -8,7 +8,7 @@ function AppController( view, model ){
 
   // This class extends component/view/AbstractController
   // so we need to call the super contructor
-  this.super( view );
+  this.super( view, scope );
 
   // Fires when an instance was inserted into the document
   this.onAttached = function(){

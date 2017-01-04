@@ -5,7 +5,7 @@
 
 module.exports = {
   /** Frontend facade. */
-  frontend: require('./frontend/service/ComponentFacade.js'),
+  frontend: require('./frontend/service/ComponentService.js'),
   /** Backend */
   backend: {
     /** @class */

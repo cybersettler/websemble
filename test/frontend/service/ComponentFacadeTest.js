@@ -3,7 +3,7 @@ const reqlib = require('app-root-path').require;
 const appRoot = require("app-root-path");
 const path = require("path");
 require('node-browser-environment')();
-const Facade = reqlib('/frontend/service/ComponentFacade.js');
+const Facade = reqlib('/frontend/service/ComponentService.js');
 
 window.FRONTEND_PATH = path.join(appRoot.toString(), "test", "mockapp", "frontend");
 document.components = {};
@@ -18,19 +18,11 @@ document.registerElement = function(elementName, config){
 document._currentScript = document.createElement("script");
 
 describe('ComponentFacade', function(){
-  var afterAppCreated;
-  before(function() {
-    afterAppCreated = Facade.createAppComponent();
-//    document.components["core-app"].prototype.createdCallback();
-  });
-  describe('#createAppComponent', function() {
+  describe('#createComponent', function() {
     it("generates core-app component", function(done) {
-      assert.isDefined(afterAppCreated);
+      AppElementConstructor = Facade.createComponent('core-app');
+      assert.isDefined(AppElementConstructor);
       done();
-    /*  afterAppCreated.then(function(app) {
-        assert.isDefined(app);
-        done();
-      }).catch(done); */
     });
   });
 });

@@ -25,23 +25,17 @@ function AbstractController(args) {
     delete: "doDelete"
   };
 
-  /** @member { HTMLElement } */
-  this.view = args[0];
+  this.getView = function() {
+    return args[0];
+  };
 
-  /** @member { Object } */
-  this.model = args[1];
+  this.getScope = function() {
+    return args[1];
+  };
 
-  /** @member { Object } */
-  this.menu = {};
-
-  /**
-   * A map with view tag name as key and view controller as value.
-   * @member { Object }
-   */
-  this.scope.views = {};
-
-  /* @inner { Object } scope.components - A map with component tag name as key and HTML element contructor as value. */
-  this.scope.components = {};
+  var menu = {};
+  var views = {};
+  var components = {};
 
   /**
    * Instantiates an Electron remote Menu.
@@ -57,20 +51,19 @@ function AbstractController(args) {
    * @return { Object } This.
    */
   this.setMenuFromTemplate = function(template) {
-    var menu = Menu.buildFromTemplate(template);
+    menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
-    this.menu = menu;
     return this;
   };
 
   /**
    * Sets the app menu.
-   * @param { Object } menu - The app menu, an instance of electron.remote.Menu.
+   * @param { Object } appMenu - The app menu, an instance of electron.remote.Menu.
    * @return { Object } This.
    */
-  this.setMenu = function(menu) {
+  this.setMenu = function(appMenu) {
+    menu = appMenu;
     Menu.setApplicationMenu(menu);
-    this.menu = menu;
     return this;
   };
 
@@ -82,7 +75,7 @@ function AbstractController(args) {
    * @return { Object } This.
    */
   this.registerView = function(params) {
-    this.scope.views[params.elementName] = params.viewController;
+    views[params.elementName] = params.viewController;
     var event = new Event(params.elementName + " registered");
     document.dispatchEvent(event);
     return this;
@@ -96,7 +89,7 @@ function AbstractController(args) {
    * @return { Object } This.
    */
   this.registerElement = function(params) {
-    this.scope.components[params.elementName] = params.elementConstructor;
+    components[params.elementName] = params.elementConstructor;
     return this;
   };
 
@@ -107,7 +100,7 @@ function AbstractController(args) {
    * @return { function } The HTML element constructor.
    */
   this.getElement = function(params) {
-    return this.scope.components[params.elementName];
+    return components[params.elementName];
   };
 
   /**
@@ -128,7 +121,7 @@ function AbstractController(args) {
    * @return { Object } this.
    */
   this.unregisterView = function(params) {
-    delete this.scope.views[params.elementName];
+    delete views[params.elementName];
     return this;
   };
 
@@ -156,7 +149,7 @@ function AbstractController(args) {
    * @return { Object } Component controller.
    */
   this.getViewController = function(tag) {
-    return this.scope.views[tag];
+    return views[tag];
   };
 
   /**
@@ -165,7 +158,7 @@ function AbstractController(args) {
    * @return { Object } Component scope.
    */
   this.getViewScope = function(tag) {
-    return this.getViewController(tag).scope;
+    return this.getViewController(tag).getScope();
   };
 
   /**
@@ -218,7 +211,7 @@ function AbstractController(args) {
    * @return { Object } this.
    */
   this.clearViews = function() {
-    var view = this.view;
+    var view = this.getView();
     while (view.firstChild) {
       view.removeChild(view.lastChild);
     }
@@ -244,7 +237,7 @@ function AbstractController(args) {
    */
   this.addView = function(params) {
     var element = this.getElementInstance(params);
-    this.view.appendChild(element);
+    this.getView().appendChild(element);
     return element;
   };
 
@@ -255,7 +248,7 @@ function AbstractController(args) {
    */
   this.removeView = function(params) {
     var element = this.view.querySelector(params.elementName.toLowerCase());
-    this.view.removeChild(element);
+    this.getView().removeChild(element);
     return element;
   };
 }
