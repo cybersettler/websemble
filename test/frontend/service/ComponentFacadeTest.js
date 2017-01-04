@@ -2,7 +2,7 @@ const assert = require('chai').assert;
 const reqlib = require('app-root-path').require;
 const appRoot = require("app-root-path");
 const path = require("path");
-require('node-browser-environment')();
+require('browser-env')();
 const Facade = reqlib('/frontend/service/ComponentService.js');
 
 window.FRONTEND_PATH = path.join(appRoot.toString(), "test", "mockapp", "frontend");

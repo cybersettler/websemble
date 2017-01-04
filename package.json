@@ -17,6 +17,7 @@
     "tv4": "^1.1.12"
   },
   "devDependencies": {
+    "browser-env": "^2.0.19",
     "chai": "^3.5.0",
     "chalk": "^1.1.3",
     "conventional-github-releaser": "^1.1.2",
@@ -30,7 +31,6 @@
     "gulp-mocha": "^2.2.0",
     "gulp-util": "^3.0.7",
     "minimist": "^1.2.0",
-    "node-browser-environment": "^1.1.0",
     "run-sequence": "^1.2.1"
   },
   "repository": {
