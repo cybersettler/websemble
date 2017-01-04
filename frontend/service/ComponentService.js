@@ -3,6 +3,7 @@
  * @module frontend/service/ComponentService
  */
 
+/* global HTMLElement */
 /* eslint-env browser */
 
 const appRoot = require('app-root-path');
