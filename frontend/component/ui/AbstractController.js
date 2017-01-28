@@ -31,7 +31,9 @@ function AbstractController(args) {
 
   scope.getParentView().then(function(parentView) {
     parentView.addEventListener('refresh', function() {
-      controller.render();
+      if (controller.render) {
+        controller.render();
+      }
     });
   });
 }
