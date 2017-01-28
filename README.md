@@ -1,4 +1,4 @@
-# websemble [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
+# websemble
 > Desktop application MVC framework
 
 it offers the following features:
