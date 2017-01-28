@@ -5,6 +5,8 @@
 
  const ApiService = require('../../service/ApiService.js');
 
+ /* eslint-env browser */
+
 /**
  * Abstract controller extended by ui controllers.
  * @constructor
@@ -29,11 +31,21 @@
    };
 
    var controller = this;
+   var view = args[0];
    var scope = args[1];
 
    scope.onAttached.then(function() {
      ApiService.bindApiDownward(controller);
    });
+
+   /**
+    * Broadcasts a refresh event that triggers a render of all components
+    * inside the view.
+    */
+   this.refresh = function() {
+     var event = new Event('refresh');
+     view.dispatchEvent(event);
+   };
  }
 
  module.exports = AbstractController;

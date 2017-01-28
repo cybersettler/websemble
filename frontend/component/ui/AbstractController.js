@@ -25,6 +25,15 @@ function AbstractController(args) {
   this.getScope = function() {
     return args[1];
   };
+
+  var controller = this;
+  var scope = args[1];
+
+  scope.getParentView().then(function(parentView) {
+    parentView.addEventListener('refresh', function() {
+      controller.render();
+    });
+  });
 }
 
 module.exports = AbstractController;
