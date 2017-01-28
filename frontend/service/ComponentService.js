@@ -11,10 +11,13 @@ const ClassUtil = require('../../util/ClassUtil.js');
 const StringUtil = require('../../util/StringUtil.js');
 const Scope = require('./Scope.js');
 const ComponentAbstractController = require(
-  '../component/controller/AbstractController.js');
+  '../component/ui/AbstractController.js');
 const AppAbstractController = require(
   '../component/core/AbstractController.js');
+const ViewAbstractController = require(
+    '../component/view/AbstractController.js');
 var afterAppCreated;
+var afterAppAttached;
 
 module.exports = {
   createComponent: function(elementName) { // eslint-disable-line require-jsdoc
@@ -24,19 +27,28 @@ module.exports = {
     // Creates an object based in the HTML Element prototype
     var elementProto = Object.create(HTMLElement.prototype);
     var componentPath = getComponentPath(elementName);
-    var AbstractController = isAppComponent(elementName) ?
-      AppAbstractController : ComponentAbstractController;
+
+    var AbstractController = ComponentAbstractController;
+    if (isAppComponent(elementName)) {
+      AbstractController = AppAbstractController;
+    } else if (isViewComponent(elementName)) {
+      AbstractController = ViewAbstractController;
+    }
 
     // Fires when an instance was inserted into the document
     var onAttached = new Promise(function(fulfill) {
       elementProto.attachedCallback = function() {
         var tag = this.tagName.toLowerCase();
         console.log("Element attached", tag);
-        var event = new Event(tag + " attached");
+        var event = new Event(tag + "_attached");
         document.dispatchEvent(event);
-        fulfill();
+        fulfill(this);
       };
     });
+
+    if (isAppComponent(elementName)) {
+      afterAppAttached = onAttached;
+    }
 
     // Fires when an instance was removed from the document
     var onDetached = new Promise(function(fulfill) {
@@ -63,7 +75,8 @@ module.exports = {
       localContext: localContext,
       onAttached: onAttached,
       onDetached: onDetached,
-      onAttributeChanged: onAttributeChanged
+      onAttributeChanged: onAttributeChanged,
+      afterAppAttached: afterAppAttached
     };
 
     var ViewController = ClassUtil.extend(
@@ -137,4 +150,8 @@ function getComponentPath(componentTag) { // eslint-disable-line require-jsdoc
 
 function isAppComponent(elementName) { // eslint-disable-line require-jsdoc
   return /^core-/.test(elementName);
+}
+
+function isViewComponent(elementName) { // eslint-disable-line require-jsdoc
+  return /^view-/.test(elementName);
 }

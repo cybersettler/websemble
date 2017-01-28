@@ -7,32 +7,27 @@
 /**
  * Create resource.
  * @function
- * @name DAOInterface#create
+ * @name DAOInterface#insert
  * @param {Object} data - Resource data.
- * @returns {Promise} The created resource.
+ * @returns {Promise} A promise that resolves to the created resource.
  */
 
 /**
  * Find all resources.
  * @function
- * @name DAOInterface#findAll
- * @returns {Promise} An array of resources.
+ * @name DAOInterface#find
+ * @param {Object} [query] - A query object.
+ * @param {Object} [options] - An options object.
+ * @returns {Promise} A promise that resolves to an array of found resources.
  */
 
 /**
  * Find by resource id.
  * @function
- * @name DAOInterface#findById
- * @param {string} id - Resource id.
- * @returns {Promise} A resource object or null.
- */
-
-/**
- * Find resources that match a condition.
- * @function
- * @name DAOInterface#findWhere
- * @param {Object} condition - Filter.
- * @returns {Promise} Array of resources.
+ * @name DAOInterface#findOne
+ * @param {Object} query - A query object.
+ * @returns {Promise} A promise that resolves to
+ * the found resource or null.
  */
 
 /**
@@ -40,25 +35,19 @@
  * @function
  * @name DAOInterface#update
  * @param {string} id - Resource id, required.
- * @param {Object} data - Resource data.
- * @returns {Promise} Updated resource.
- */
-
-/**
- * Update resource replacing only the given attributes.
- * @function
- * @name DAOInterface#updatePartially
- * @param {string} id - Resource id, required.
- * @param {Object} data - Resource data.
- * @returns {Promise} Updated resource.
+ * @param {Object} [query] - A query object.
+ * @param {Object} update - Attributes to be updated.
+ * @param {Object} [options] - An options object.
+ * @returns {Promise} A promise that resolves to number of affected documents.
  */
 
 /**
  * Delete resource.
  * @function
- * @name DAOInterface#delete
- * @param {string} id - Resource id.
- * @returns {Promise} Number of deleted resources.
+ * @name DAOInterface#remove
+ * @param {Object} [query] - A query object.
+ * @param {Object} [options] - An options object.
+ * @returns {Promise} A promise that resolves to number of affected documents.
  */
 
 /**

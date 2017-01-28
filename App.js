@@ -1,9 +1,11 @@
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
+const path = require('path');
 const appRoot = require('app-root-path');
 const RESTService = require('./backend/service/RESTService.js');
 const RESTResponse = require('./backend/service/RESTResponse');
+const BackendConfig = path.join(appRoot.toString(), 'backend/config/config.js');
 
 /**
  * Entry point of the Electron application.
@@ -21,6 +23,9 @@ function App() {
       app.quit();
     }
   });
+
+  // Inititalize persistence layer
+  RESTService.init(BackendConfig.persistence);
 
   // This method will be called when Electron has done everything
   // initialization and ready for creating browser windows.
@@ -52,12 +57,60 @@ function App() {
     });
 
     ipc.on("get", function(e, args) {
-      RESTService.get(args.url).then(
+      RESTService.handleGet(args.url).then(
         function(result) {
           e.sender.send('response', result);
         },
         function(err) {
           var response = new RESTResponse(args.url, "GET", err);
+          response.status = "500";
+          e.sender.send('response', response);
+        });
+    });
+
+    ipc.on("post", function(e, args) {
+      RESTService.handlePost(args.url, args.data).then(
+        function(result) {
+          e.sender.send('response', result);
+        },
+        function(err) {
+          var response = new RESTResponse(args.url, "POST", err);
+          response.status = "500";
+          e.sender.send('response', response);
+        });
+    });
+
+    ipc.on("put", function(e, args) {
+      RESTService.handlePut(args.url, args.data).then(
+        function(result) {
+          e.sender.send('response', result);
+        },
+        function(err) {
+          var response = new RESTResponse(args.url, "PUT", err);
+          response.status = "500";
+          e.sender.send('response', response);
+        });
+    });
+
+    ipc.on("patch", function(e, args) {
+      RESTService.handlePatch(args.url, args.data).then(
+        function(result) {
+          e.sender.send('response', result);
+        },
+        function(err) {
+          var response = new RESTResponse(args.url, "PATCH", err);
+          response.status = "500";
+          e.sender.send('response', response);
+        });
+    });
+
+    ipc.on("delete", function(e, args) {
+      RESTService.handleDelete(args.url).then(
+        function(result) {
+          e.sender.send('response', result);
+        },
+        function(err) {
+          var response = new RESTResponse(args.url, "DELETE", err);
           response.status = "500";
           e.sender.send('response', response);
         });

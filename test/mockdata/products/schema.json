@@ -3,7 +3,7 @@
   "title": "Product",
   "type": "object",
   "properties": {
-    "id": {
+    "_id": {
       "description": "The unique identifier for a product",
       "type": "string"
     },

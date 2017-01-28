@@ -16,7 +16,6 @@ function AbstractController(args) {
   const electron = require('electron');
   const remote = electron.remote;
   const Menu = remote.Menu;
-  const BackendService = require("../../service/BackendService.js");
   const actionMap = {
     get: "doGet",
     post: "doPost",
@@ -24,6 +23,8 @@ function AbstractController(args) {
     patch: "doPatch",
     delete: "doDelete"
   };
+
+  var controller = this;
 
   this.getView = function() {
     return args[0];
@@ -128,19 +129,19 @@ function AbstractController(args) {
   /**
    * Dispatches an event.
    * @param { Object } event - Event data.
-   * @param { string } event.name - HTTP action GET, POST, PUT, PATCH or DELETE.
+   * @param { string } event.type - HTTP action GET, POST, PUT, PATCH or DELETE.
    * @param { string } event.target - Event target.
    * @param { string } event.source - Event source.
    * @return { Promise } A promise.
    */
   this.dispatch = function(event) {
     if (event.target === "app") {
-      var action = actionMap[event.name];
+      var action = actionMap[event.type];
       return this[action](event);
     }
 
     var viewController = this.getViewController(event.target);
-    return viewController[event.name](event);
+    return viewController[event.type](event);
   };
 
   /**
@@ -159,51 +160,6 @@ function AbstractController(args) {
    */
   this.getViewScope = function(tag) {
     return this.getViewController(tag).getScope();
-  };
-
-  /**
-   * Makes a get request to the backend.
-   * @param { Object } params - Get request data.
-   * @return { Promise } The response.
-   */
-  this.doGet = function(params) {
-    return BackendService.get(params);
-  };
-
-  /**
-   * Makes a post request to the backend.
-   * @param { Object } params - Post data.
-   * @return { Promise } The response.
-   */
-  this.doPost = function(params) {
-    return BackendService.post(params.ref, params.data);
-  };
-
-  /**
-   * Makes a put request to the backend.
-   * @param { Object } params - Put data.
-   * @return { Promise } The response.
-   */
-  this.doPut = function(params) {
-    return BackendService.put(params.ref, params.data);
-  };
-
-  /**
-   * Makes a patch request to the backend.
-   * @param { Object } params - Post data.
-   * @return { Promise } The response.
-   */
-  this.doPatch = function(params) {
-    return BackendService.patch(params.ref, params.data);
-  };
-
-  /**
-   * Makes a delete request to the backend.
-   * @param { Object } params - Delete data.
-   * @return { Promise } The response.
-   */
-  this.doDelete = function(params) {
-    return BackendService.delete(params.ref);
   };
 
   /**
@@ -251,6 +207,10 @@ function AbstractController(args) {
     this.getView().removeChild(element);
     return element;
   };
+
+  args[0].addEventListener('setView', function(e) {
+    controller.setView(e.detail);
+  });
 }
 
 module.exports = AbstractController;
