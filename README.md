@@ -19,7 +19,7 @@ npm install websemble
 First let's create a view to display, the Index view.
 
 ```bash
-mkdir --parents frontend/components/view/index
+mkdir -p frontend/component/view/Index
 ```
 
 In the index folder create a Controller.js file and a View.html file.
@@ -48,7 +48,7 @@ module.exports = IndexController;
 Next we will create the App component.
 
 ```bash
-mkdir --parents frontend/components/core/App
+mkdir -p frontend/component/core/App
 ```
 
 As with the view component, we have to create a Controller and a
@@ -80,6 +80,9 @@ Next create the app.js file in the root with the following content:
 var Websemble = require('websemble');
 var app = new Websemble.backend.App();
 ```
+
+Make sure that the value for the main attribute in the package.json
+configuration file is "app.js".
 
 The last file we need to create is the index.html in the root.
 
@@ -124,3 +127,6 @@ your websemble application. Checkout the Yeoman [websemble generator]
 For information about the motivation and architecture behind websemble,
 have a look at the [project's wiki]
 (https://github.com/cybersettler/websemble/wiki).
+
+To learn about making desktop applications with html5, head to the [Electron website](http://electron.atom.io/). This is the framework on top of which
+websemble is built.
