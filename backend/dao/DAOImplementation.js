@@ -70,8 +70,9 @@ const tv4 = require("tv4");
 function DAOImplementation(config) {
   this.collection = new Datastore(config);
   if (config.schema) {
+    var basePath = config.basePath || 'backend/persistence/catalog/';
     this.schema = fs.readJSON(path.join(appRoot.toString(),
-    'backend/persistence/catalog/', config.schema));
+    basePath, config.schema));
   } else {
     this.schema = {};
   }

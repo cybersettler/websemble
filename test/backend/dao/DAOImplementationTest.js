@@ -31,9 +31,11 @@ var invalidSampleProduct = {
 };
 
 describe('DAOImplementation', function() {
+  console.log("App root", appRoot.toString());
   var config = {
+    basePath: path.join('test', 'mockdata', 'products'),
     collectionName: 'products',
-    schema: path.join('test', 'mockdata', 'products', 'schema.json')
+    schema: 'schema.json'
   };
   var initialData = fs.readJSON(
     path.join(mockdataSource,"products","index.json"));

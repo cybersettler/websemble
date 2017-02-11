@@ -18,8 +18,9 @@ var sampleProduct;
 
 var config = {
   catalog: [{
+    basePath: path.join('test', 'mockdata', 'products'),
     collectionName: 'products',
-    schema: path.join('test', 'mockdata', 'products', 'schema.json')
+    schema: 'schema.json'
   }]
 };
 
