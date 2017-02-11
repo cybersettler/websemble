@@ -182,7 +182,7 @@ function AbstractController(args) {
    */
   this.setView = function(params) {
     this.clearViews();
-    this.addView({elementName: params.elementName});
+    this.addView(params);
     return this;
   };
 
@@ -193,6 +193,9 @@ function AbstractController(args) {
    */
   this.addView = function(params) {
     var element = this.getElementInstance(params);
+    if (params.path) {
+      element.dataset.path = params.path;
+    }
     this.getView().appendChild(element);
     return element;
   };

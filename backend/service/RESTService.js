@@ -129,6 +129,9 @@ function parseRequest(request) { // eslint-disable-line require-jsdoc
 function parseResource(uri) { // eslint-disable-line require-jsdoc
   var result = {};
   var parts = uri.split("/");
+  if (/^\//.test(uri)) {
+    parts.splice(0, 1);
+  }
   result.collection = parts[0];
   if (parts.length > 1) {
     result.documentId = parts[parts.length - 1];

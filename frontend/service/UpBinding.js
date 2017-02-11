@@ -5,23 +5,27 @@
 
  /* eslint-env browser */
 
-const StringUtil = require('../../util/StringUtil.js');
+const BindingMethodNameService = require('./BindingMethodNameService.js');
 
 /**
  * Instantiates a parent binding.
  * @constructor
  * @param {strin} attributeName - Element attribute name.
- * @param {string} arg - Argument to pass to the event handler.
+ * @param {string} value - Attribute value.
  * @param {HTMLElement} view - Element owner of the attribute.
  */
-function UpBinding(attributeName, arg, view) {
-  var name = StringUtil.capitalize(attributeName);
+function UpBinding(attributeName, value, view) {
   this.view = view;
   this.attributeName = attributeName;
-  this.argument = arg;
-  this.getterName = 'get' + name;
-  this.setterName = 'set' + name;
-  this.onName = 'on' + name;
+  var methodNames = BindingMethodNameService
+                      .getBindingMethodNames(attributeName);
+  this.value = value;
+  this.getterName = methodNames.getterName;
+  this.setterName = methodNames.setterName;
+  this.creatorName = methodNames.creatorName;
+  this.updaterName = methodNames.updaterName;
+  this.removerName = methodNames.removerName;
+  this.onName = methodNames.onName;
 }
 
 /**
@@ -31,11 +35,11 @@ function UpBinding(attributeName, arg, view) {
 UpBinding.prototype.getter = function() {
   var view = this.view;
   var eventType = this.getterName;
-  var argument = this.argument;
+  var value = this.value;
   return new Promise(function(fulfill) {
     var event = new CustomEvent(eventType, {
       detail: {
-        arg: argument
+        ref: value
       }
     });
     view.addEventListener('viewResponse', processGet, false);
@@ -55,11 +59,11 @@ UpBinding.prototype.getter = function() {
 UpBinding.prototype.setter = function(data) {
   var view = this.view;
   var eventType = this.setterName;
-  var argument = this.argument;
+  var value = this.value;
   return new Promise(function(fulfill) {
     var event = new CustomEvent(eventType, {
       detail: {
-        arg: argument,
+        ref: value,
         data: data
       }
     });
@@ -74,22 +78,99 @@ UpBinding.prototype.setter = function(data) {
 
 /**
  * Event trigger function.
+ * @param {Object|string|number|boolean} data - Data to be comunicated.
  * @return {Promise} A promise that resolves to the handler's return data.
  */
-UpBinding.prototype.on = function() {
+UpBinding.prototype.on = function(data) {
   var view = this.view;
   var eventType = this.onName;
-  var argument = this.argument;
+  var value = this.value;
   return new Promise(function(fulfill) {
     var event = new CustomEvent(eventType, {
       detail: {
-        arg: argument
+        ref: value,
+        data: data
       }
     });
     view.addEventListener('viewResponse', processOn, false);
     view.dispatchEvent(event);
     function processOn(e) { // eslint-disable-line require-jsdoc
       view.removeEventListener('viewResponse', processOn, false);
+      fulfill(e.detail);
+    }
+  });
+};
+
+/**
+ * Creator function.
+ * @param {Object|string|number|boolean} data - Data to be posted.
+ * @return {Promise} A promise that resolves to the handler's return data.
+ */
+UpBinding.prototype.creator = function(data) {
+  var view = this.view;
+  var eventType = this.creatorName;
+  var value = this.value;
+  return new Promise(function(fulfill) {
+    var event = new CustomEvent(eventType, {
+      detail: {
+        ref: value,
+        data: data
+      }
+    });
+    view.addEventListener('viewResponse', processCreate, false);
+    view.dispatchEvent(event);
+    function processCreate(e) { // eslint-disable-line require-jsdoc
+      view.removeEventListener('viewResponse', processCreate, false);
+      fulfill(e.detail);
+    }
+  });
+};
+
+/**
+ * Updater function.
+ * @param {Object|string|number|boolean} data - Data to be updated.
+ * @return {Promise} A promise that resolves to the handler's return data.
+ */
+UpBinding.prototype.updater = function(data) {
+  var view = this.view;
+  var eventType = this.updaterName;
+  var value = this.value;
+  return new Promise(function(fulfill) {
+    var event = new CustomEvent(eventType, {
+      detail: {
+        ref: value,
+        data: data
+      }
+    });
+    view.addEventListener('viewResponse', processUpdate, false);
+    view.dispatchEvent(event);
+    function processUpdate(e) { // eslint-disable-line require-jsdoc
+      view.removeEventListener('viewResponse', processUpdate, false);
+      fulfill(e.detail);
+    }
+  });
+};
+
+/**
+ * Remover function.
+ * @param {Object|string|number|boolean} data - Data to be removed.
+ * @return {Promise} A promise that resolves to the handler's return data.
+ */
+UpBinding.prototype.remover = function(data) {
+  var view = this.view;
+  var eventType = this.removerName;
+  var value = this.value;
+  return new Promise(function(fulfill) {
+    var event = new CustomEvent(eventType, {
+      detail: {
+        ref: value,
+        data: data
+      }
+    });
+    view.addEventListener('viewResponse', processRemove, false);
+    view.dispatchEvent(event);
+    function processRemove(e) { // eslint-disable-line require-jsdoc
+      view.removeEventListener('viewResponse', processRemove, false);
       fulfill(e.detail);
     }
   });

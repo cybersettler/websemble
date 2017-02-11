@@ -126,9 +126,8 @@
  */
  Scope.prototype.navigateTo = function(url) {
    var data = getNavigationDataFromUrl(url);
-   this.afterAppAttached.then(function(app) {
-     app.dispatchEvent('setView', data);
-   });
+   var event = new CustomEvent('setView', {detail: data});
+   document.querySelector('core-app').dispatchEvent(event);
  };
 
 /**
@@ -157,7 +156,7 @@
 
  function getNavigationDataFromUrl(url) { // eslint-disable-line require-jsdoc
    "use strict";
-   var pattern = /view\/(\w+)\/?([?].*)?/;
+   var pattern = /view\/(\w+)\/?(.*)?\/?([?].*)?$/;
    if (!pattern.test(url)) {
      throw new Error("URL pattern not supported: " + url);
    }
@@ -166,7 +165,10 @@
      elementName: 'view-' + match[1].toLowerCase()
    };
    if (match[2]) {
-     setParams(match[2].replace('?', ''));
+     result.path = match[2];
+   }
+   if (match[3]) {
+     setParams(match[3].replace('?', ''));
    }
    return result;
    function setParams(params) { // eslint-disable-line require-jsdoc

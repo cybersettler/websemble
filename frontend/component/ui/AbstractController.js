@@ -27,6 +27,7 @@ function AbstractController(args) {
   };
 
   var controller = this;
+  var view = args[0];
   var scope = args[1];
 
   scope.getParentView().then(function(parentView) {
@@ -35,6 +36,18 @@ function AbstractController(args) {
         controller.render();
       }
     });
+  });
+
+  view.addEventListener('render', function() {
+    if (controller.render) {
+      controller.render();
+    }
+  });
+
+  scope.onAttached.then(function() {
+    if (controller.render) {
+      controller.render();
+    }
   });
 }
 

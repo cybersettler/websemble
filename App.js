@@ -5,7 +5,8 @@ const path = require('path');
 const appRoot = require('app-root-path');
 const RESTService = require('./backend/service/RESTService.js');
 const RESTResponse = require('./backend/service/RESTResponse');
-const BackendConfig = path.join(appRoot.toString(), 'backend/config/config.js');
+const BackendConfig = path.join(appRoot.toString(), 'backend/config.js');
+const fs = require('fs');
 
 /**
  * Entry point of the Electron application.
@@ -25,7 +26,13 @@ function App() {
   });
 
   // Inititalize persistence layer
-  RESTService.init(BackendConfig.persistence);
+  fs.exists(BackendConfig, function(result) {
+    if (result) {
+      RESTService.init(require(BackendConfig).persistence);
+    } else {
+      RESTService.init();
+    }
+  });
 
   // This method will be called when Electron has done everything
   // initialization and ready for creating browser windows.
@@ -57,60 +64,70 @@ function App() {
     });
 
     ipc.on("get", function(e, args) {
-      RESTService.handleGet(args.url).then(
+      RESTService.handleGet(args.ref).then(
         function(result) {
+          result.request.token = args.token;
           e.sender.send('response', result);
         },
         function(err) {
-          var response = new RESTResponse(args.url, "GET", err);
+          var response = new RESTResponse(args.ref, "GET", err);
+          response.request.token = args.token;
           response.status = "500";
           e.sender.send('response', response);
         });
     });
 
     ipc.on("post", function(e, args) {
-      RESTService.handlePost(args.url, args.data).then(
+      RESTService.handlePost(args.ref, args.data).then(
         function(result) {
+          result.request.token = args.token;
           e.sender.send('response', result);
         },
         function(err) {
-          var response = new RESTResponse(args.url, "POST", err);
+          var response = new RESTResponse(args.ref, "POST", err);
+          response.request.token = args.token;
           response.status = "500";
           e.sender.send('response', response);
         });
     });
 
     ipc.on("put", function(e, args) {
-      RESTService.handlePut(args.url, args.data).then(
+      RESTService.handlePut(args.ref, args.data).then(
         function(result) {
+          result.request.token = args.token;
           e.sender.send('response', result);
         },
         function(err) {
-          var response = new RESTResponse(args.url, "PUT", err);
+          var response = new RESTResponse(args.ref, "PUT", err);
+          response.request.token = args.token;
           response.status = "500";
           e.sender.send('response', response);
         });
     });
 
     ipc.on("patch", function(e, args) {
-      RESTService.handlePatch(args.url, args.data).then(
+      RESTService.handlePatch(args.ref, args.data).then(
         function(result) {
+          result.request.token = args.token;
           e.sender.send('response', result);
         },
         function(err) {
-          var response = new RESTResponse(args.url, "PATCH", err);
+          var response = new RESTResponse(args.ref, "PATCH", err);
+          response.request.token = args.token;
           response.status = "500";
           e.sender.send('response', response);
         });
     });
 
     ipc.on("delete", function(e, args) {
-      RESTService.handleDelete(args.url).then(
+      RESTService.handleDelete(args.ref).then(
         function(result) {
+          result.request.token = args.token;
           e.sender.send('response', result);
         },
         function(err) {
-          var response = new RESTResponse(args.url, "DELETE", err);
+          var response = new RESTResponse(args.ref, "DELETE", err);
+          response.request.token = args.token;
           response.status = "500";
           e.sender.send('response', response);
         });

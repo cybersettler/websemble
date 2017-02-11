@@ -41,7 +41,7 @@ function addListener(eventType) { // eslint-disable-line require-jsdoc
   var childView = this.childElement;
   childView.addEventListener(eventType, function(e) {
     var data = controller[eventType](e);
-    if (data.then) {
+    if (data && data.then) {
       data.then(function(result) {
         dispatchResponse(childView, result);
       });

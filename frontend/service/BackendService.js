@@ -4,43 +4,59 @@
  */
 
 const ipc = require("electron").ipcRenderer;
+const shortid = require('shortid');
 
 var requests = {};
 
 ipc.on("response", function(e, response) {
-  console.log("response received", e);
-  var request = requests[response.requestRef];
+  var request = requests[response.request.token];
   if (request) {
-    console.log("original request", request);
     request.fulfill(response);
-    delete requests[response.requestRef];
+    delete requests[response.request.token];
   }
 });
 
 module.exports = {
   navigate: function(ref) {
-    console.log("Navigate", ref);
     return new Promise(function(fulfill, reject) {
-      requests[ref] = {fulfill: fulfill, reject: reject};
-      ipc.send("navigate", {ref: ref});
+      var token = shortid.generate();
+      requests[token] = {fulfill: fulfill, reject: reject};
+      ipc.send("navigate", {ref: ref, token: token});
     });
   },
   get: function(ref) {
     return new Promise(function(fulfill, reject) {
-      requests[ref] = {fulfill: fulfill, reject: reject};
-      ipc.send("get", {ref: ref});
+      var token = shortid.generate();
+      requests[token] = {fulfill: fulfill, reject: reject};
+      ipc.send("get", {ref: ref, token: token});
     });
   },
   post: function(ref, data) {
-    ipc.send("post", {ref: ref, data: data});
+    return new Promise(function(fulfill, reject) {
+      var token = shortid.generate();
+      requests[token] = {fulfill: fulfill, reject: reject};
+      ipc.send("post", {ref: ref, data: data, token: token});
+    });
   },
   put: function(ref, data) {
-    ipc.send("put", {ref: ref, data: data});
+    return new Promise(function(fulfill, reject) {
+      var token = shortid.generate();
+      requests[token] = {fulfill: fulfill, reject: reject};
+      ipc.send("put", {ref: ref, data: data, token: token});
+    });
   },
   patch: function(ref, data) {
-    ipc.send("patch", {ref: ref, data: data});
+    return new Promise(function(fulfill, reject) {
+      var token = shortid.generate();
+      requests[token] = {fulfill: fulfill, reject: reject};
+      ipc.send("patch", {ref: ref, data: data, token: token});
+    });
   },
   delete: function(ref) {
-    ipc.send("delete", {ref: ref});
+    return new Promise(function(fulfill, reject) {
+      var token = shortid.generate();
+      requests[token] = {fulfill: fulfill, reject: reject};
+      ipc.send("delete", {ref: ref, token: token});
+    });
   }
 };
