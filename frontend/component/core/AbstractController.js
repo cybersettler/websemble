@@ -16,13 +16,12 @@ function AbstractController(args) {
   const electron = require('electron');
   const remote = electron.remote;
   const Menu = remote.Menu;
-  const actionMap = {
-    get: "doGet",
-    post: "doPost",
-    put: "doPut",
-    patch: "doPatch",
-    delete: "doDelete"
-  };
+  const ResourceBundleManager = require(
+    '../../service/ResourceBundleManager.js');
+
+  var appElement = args[0];
+  var scope = args[1];
+  var resourceBundleManager = new ResourceBundleManager(scope);
 
   var controller = this;
 
@@ -127,24 +126,6 @@ function AbstractController(args) {
   };
 
   /**
-   * Dispatches an event.
-   * @param { Object } event - Event data.
-   * @param { string } event.type - HTTP action GET, POST, PUT, PATCH or DELETE.
-   * @param { string } event.target - Event target.
-   * @param { string } event.source - Event source.
-   * @return { Promise } A promise.
-   */
-  this.dispatch = function(event) {
-    if (event.target === "app") {
-      var action = actionMap[event.type];
-      return this[action](event);
-    }
-
-    var viewController = this.getViewController(event.target);
-    return viewController[event.type](event);
-  };
-
-  /**
    * Returns a controller of a component.
    * @param { string } tag - HTML element tag name.
    * @return { Object } Component controller.
@@ -211,7 +192,17 @@ function AbstractController(args) {
     return element;
   };
 
-  args[0].addEventListener('setView', function(e) {
+  /**
+   * Load resource bundle to use in translations.
+   * @param { string } locale - locale
+   * @param { namespace } namespace - namespace
+   * @return { Promise } A promise.
+   */
+  this.loadResource = function(locale, namespace) {
+    return resourceBundleManager.loadResource(locale, namespace);
+  };
+
+  appElement.addEventListener('setView', function(e) {
     controller.setView(e.detail);
   });
 }

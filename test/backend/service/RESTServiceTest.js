@@ -17,11 +17,13 @@ const tempFolder = path.join(
 var sampleProduct;
 
 var config = {
-  catalog: [{
-    basePath: path.join('test', 'mockdata', 'products'),
-    collectionName: 'products',
-    schema: 'schema.json'
-  }]
+  persistence: {
+    catalog: [{
+      basePath: path.join('test', 'mockdata', 'products'),
+      collectionName: 'products',
+      schema: 'schema.json'
+    }]  
+  }
 };
 
 describe('RESTService', function(){

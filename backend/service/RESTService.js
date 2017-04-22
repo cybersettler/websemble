@@ -1,9 +1,13 @@
+'use strict';
+
 /**
  * REST service.
  * @module service/RESTService
  */
 
 const CatalogService = require('../dao/service/CatalogService.js');
+const ResourceBundleService = require(
+  '../dao/service/ResourceBundleService.js');
 const RESTResponse = require('./RESTResponse.js');
 
 module.exports = {
@@ -14,7 +18,10 @@ module.exports = {
    * configuration objects.
    */
   init: function(config) {
-    CatalogService.init(config);
+    if (config) {
+      CatalogService.init(config.persistence);
+      ResourceBundleService.init(config.resources);
+    }
   },
   /**
    * Handle GET request.
@@ -23,6 +30,16 @@ module.exports = {
    */
   handleGet: function(url) {
     var request = parseRequest(url);
+
+    if (request.resource.collection === "i18n") {
+      let resource = request.resource.documentId;
+      let locale = request.query.locale;
+      return ResourceBundleService.getResource(locale, resource)
+      .then(function(result) {
+        return new RESTResponse(url, "GET", result);
+      });
+    }
+
     var collection = CatalogService.getCollection(request.resource.collection);
     if (request.resource.documentId &&
        request.resource.documentId === "schema") {
@@ -114,7 +131,16 @@ function parseRequest(request) { // eslint-disable-line require-jsdoc
   var uri = parts[0];
   var resource = parseResource(uri);
   var query = null;
-  if (parts.length > 1) {
+  if (parts.length > 1 && resource.collection === 'i18n') {
+    let schema = {
+      properties: {
+        locale: {
+          type: 'string'
+        }
+      }
+    };
+    query = parseQuery(parts[1], schema);
+  } else if (parts.length > 1) {
     var schema = CatalogService.getCollection(resource.collection)
       .schema;
     query = parseQuery(parts[1], schema);

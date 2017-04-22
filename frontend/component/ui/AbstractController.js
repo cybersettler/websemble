@@ -43,12 +43,6 @@ function AbstractController(args) {
       controller.render();
     }
   });
-
-  scope.onAttached.then(function() {
-    if (controller.render) {
-      controller.render();
-    }
-  });
 }
 
 module.exports = AbstractController;

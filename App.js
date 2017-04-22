@@ -28,7 +28,7 @@ function App() {
   // Inititalize persistence layer
   fs.exists(BackendConfig, function(result) {
     if (result) {
-      RESTService.init(require(BackendConfig).persistence);
+      RESTService.init(require(BackendConfig));
     } else {
       RESTService.init();
     }

@@ -174,11 +174,10 @@
    function setParams(params) { // eslint-disable-line require-jsdoc
      var it = new URLSearchParams(params).entries();
      result.params = {};
-     let next = it.next();
+     var next = it.next();
      while (!next.done) {
-       let key = next.value[0];
-       let value = next.value[1];
-       result.params[key] = value;
+       var key = next.value[0];
+       result.params[key] = next.value[1];
        next = it.next();
      }
    }

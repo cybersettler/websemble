@@ -6,6 +6,8 @@ it offers the following features:
 * Based on web technology. Built on top of [Electron](http://electron.atom.io/)
 * File system storage service with a REST API
 * Web component support
+* i18n support with [i18next](http://i18next.com)
+* View template support with _Handlebars_
 
 ## Installation
 
