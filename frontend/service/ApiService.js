@@ -8,9 +8,10 @@ const DownBinding = require('./DownBinding.js');
 const ApiPattern = /^(?:get|set|on|create|update|remove)(\w+)/;
 const BackendPattern = /^\//;
 const BindingMethodNameService = require('./BindingMethodNameService.js');
+const attributeValueApiPattern = /^->f[(]/;
 
 function addSelector(item) { // eslint-disable-line require-jsdoc
-  return '[data-' + item + ']';
+  return '[data-' + item + '^="->f("]';
 }
 
 function generateApiMap(controller) { // eslint-disable-line require-jsdoc
@@ -42,7 +43,7 @@ function bindApiToElement(el, controller, api) { // eslint-disable-line require-
 function augmentScope(prop) { // eslint-disable-line require-jsdoc
   if (BackendPattern.test(this.view.dataset[prop])) {
     augmentScopeWithBackendBindings(prop, this.scope, this.view);
-  } else {
+  } else if (attributeValueApiPattern.test(this.view.dataset[prop])) {
     augmentScopeWithBindingMethods(prop, this.scope, this.view);
   }
 }
