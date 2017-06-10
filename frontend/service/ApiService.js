@@ -3,41 +3,22 @@
  * @module frontend/service/ApiService
  */
 
+/* eslint-env browser */
+
 const UpBinding = require('./UpBinding.js');
-const DownBinding = require('./DownBinding.js');
 const ApiPattern = /^(?:get|set|on|create|update|remove)(\w+)/;
 const BackendPattern = /^\//;
 const BindingMethodNameService = require('./BindingMethodNameService.js');
 const attributeValueApiPattern = /^->f[(]/;
 
-function addSelector(item) { // eslint-disable-line require-jsdoc
-  return '[data-' + item + '^="->f("]';
-}
-
-function generateApiMap(controller) { // eslint-disable-line require-jsdoc
-  var result = {};
-  Object.keys(controller).forEach(addApi, result);
-  return result;
-}
-
-function addApi(prop) { // eslint-disable-line require-jsdoc
-  var match = ApiPattern.exec(prop);
-  var key;
-  if (match) {
-    key = match[1].toLowerCase();
-  } else {
-    return;
-  }
-  if (key === 'view' || key === 'scope') {
-    return;
-  }
-  this[key] = this[key] || [];
-  this[key].push(prop);
-}
-
-function bindApiToElement(el, controller, api) { // eslint-disable-line require-jsdoc
-  var binding = new DownBinding(el, controller, api);
-  binding.bindApi();
+function addApi(eventType) { // eslint-disable-line require-jsdoc
+  var controller = this;
+  var view = controller.getView();
+  view.addEventListener(eventType, function(e) {
+    var data = controller[eventType](e);
+    var event = new CustomEvent('viewResponse', {detail: data});
+    view.dispatchEvent(event);
+  });
 }
 
 function augmentScope(prop) { // eslint-disable-line require-jsdoc
@@ -49,7 +30,7 @@ function augmentScope(prop) { // eslint-disable-line require-jsdoc
 }
 
 function augmentScopeWithBindingMethods(prop, scope, view) { // eslint-disable-line require-jsdoc
-  var binding = new UpBinding(prop, view.dataset[prop], view);
+  var binding = new UpBinding(prop, view.dataset[prop], scope.getParentView());
   scope[binding.getterName] = function() {
     return scope.onAttached.then(function() {
       return binding.getter();
@@ -117,25 +98,33 @@ function augmentScopeWithBackendBindings(prop, scope, view) { // eslint-disable-
   };
 }
 
+function isApi(prop) { // eslint-disable-line require-jsdoc
+  var match = ApiPattern.exec(prop);
+  var key;
+
+  if (match) {
+    key = match[1].toLowerCase();
+  } else {
+    return false;
+  }
+
+  if (key === 'view' || key === 'scope') {
+    return false;
+  }
+
+  return ApiPattern.test(prop);
+}
+
 module.exports = {
-  bindApiDownward: function(controller) {
-    var api = generateApiMap(controller);
-    var query = Object.keys(api).map(addSelector).join(',');
-    if (!query) {
-      return;
-    }
-    var matches = controller.getView().querySelectorAll(query);
-    for (var i = 0; i < matches.length; i++) {
-      bindApiToElement(matches[i], controller, api);
-    }
+  addViewApi: function(controller) {
+    Object.keys(controller).filter(isApi).forEach(addApi, controller);
   },
   bindAttribute: function(attributeName, scope, view) {
     if (BackendPattern.test(view.dataset[attributeName])) {
       augmentScopeWithBackendBindings(attributeName,
         scope, view);
     } else {
-      augmentScopeWithBindingMethods(attributeName,
-        scope, view);
+      augmentScopeWithBindingMethods(attributeName, scope, view);
     }
   },
   bindAttributes: function(attributeList, scope, view) {

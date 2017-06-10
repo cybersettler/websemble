@@ -12,10 +12,10 @@ const BindingMethodNameService = require('./BindingMethodNameService.js');
  * @constructor
  * @param {strin} attributeName - Element attribute name.
  * @param {string} value - Attribute value.
- * @param {HTMLElement} view - Element owner of the attribute.
+ * @param {Promise} getParentView - Element owner of the attribute.
  */
-function UpBinding(attributeName, value, view) {
-  this.view = view;
+function UpBinding(attributeName, value, getParentView) {
+  this.getParentView = getParentView;
   this.attributeName = attributeName;
   var methodNames = BindingMethodNameService
                       .getBindingMethodNames(attributeName);
@@ -33,21 +33,24 @@ function UpBinding(attributeName, value, view) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.getter = function() {
-  var view = this.view;
   var eventType = this.getterName;
   var value = this.value;
-  return new Promise(function(fulfill) {
-    var event = new CustomEvent(eventType, {
-      detail: {
-        ref: value
+  return this.getParentView.then(function(view) {
+    return new Promise(function(fulfill) {
+      var event = new CustomEvent(eventType, {
+        detail: {
+          ref: value
+        }
+      });
+
+      view.addEventListener('viewResponse', processGet, false);
+      view.dispatchEvent(event);
+
+      function processGet(e) { // eslint-disable-line require-jsdoc
+        view.removeEventListener('viewResponse', processGet, false);
+        fulfill(e.detail);
       }
     });
-    view.addEventListener('viewResponse', processGet, false);
-    view.dispatchEvent(event);
-    function processGet(e) { // eslint-disable-line require-jsdoc
-      view.removeEventListener('viewResponse', processGet, false);
-      fulfill(e.detail);
-    }
   });
 };
 
@@ -57,22 +60,25 @@ UpBinding.prototype.getter = function() {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.setter = function(data) {
-  var view = this.view;
   var eventType = this.setterName;
   var value = this.value;
-  return new Promise(function(fulfill) {
-    var event = new CustomEvent(eventType, {
-      detail: {
-        ref: value,
-        data: data
+  return this.getParentView.then(function(view) {
+    return new Promise(function(fulfill) {
+      var event = new CustomEvent(eventType, {
+        detail: {
+          ref: value,
+          data: data
+        }
+      });
+
+      view.addEventListener('viewResponse', processSet, false);
+      view.dispatchEvent(event);
+
+      function processSet(e) { // eslint-disable-line require-jsdoc
+        view.removeEventListener('viewResponse', processSet, false);
+        fulfill(e.detail);
       }
     });
-    view.addEventListener('viewResponse', processSet, false);
-    view.dispatchEvent(event);
-    function processSet(e) { // eslint-disable-line require-jsdoc
-      view.removeEventListener('viewResponse', processSet, false);
-      fulfill(e.detail);
-    }
   });
 };
 
@@ -82,22 +88,25 @@ UpBinding.prototype.setter = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.on = function(data) {
-  var view = this.view;
   var eventType = this.onName;
   var value = this.value;
-  return new Promise(function(fulfill) {
-    var event = new CustomEvent(eventType, {
-      detail: {
-        ref: value,
-        data: data
+  return this.getParentView.then(function(view) {
+    return new Promise(function(fulfill) {
+      var event = new CustomEvent(eventType, {
+        detail: {
+          ref: value,
+          data: data
+        }
+      });
+
+      view.addEventListener('viewResponse', processOn, false);
+      view.dispatchEvent(event);
+
+      function processOn(e) { // eslint-disable-line require-jsdoc
+        view.removeEventListener('viewResponse', processOn, false);
+        fulfill(e.detail);
       }
     });
-    view.addEventListener('viewResponse', processOn, false);
-    view.dispatchEvent(event);
-    function processOn(e) { // eslint-disable-line require-jsdoc
-      view.removeEventListener('viewResponse', processOn, false);
-      fulfill(e.detail);
-    }
   });
 };
 
@@ -107,22 +116,25 @@ UpBinding.prototype.on = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.creator = function(data) {
-  var view = this.view;
   var eventType = this.creatorName;
   var value = this.value;
-  return new Promise(function(fulfill) {
-    var event = new CustomEvent(eventType, {
-      detail: {
-        ref: value,
-        data: data
+  return this.getParentView.then(function(view) {
+    return new Promise(function(fulfill) {
+      var event = new CustomEvent(eventType, {
+        detail: {
+          ref: value,
+          data: data
+        }
+      });
+
+      view.addEventListener('viewResponse', processCreate, false);
+      view.dispatchEvent(event);
+
+      function processCreate(e) { // eslint-disable-line require-jsdoc
+        view.removeEventListener('viewResponse', processCreate, false);
+        fulfill(e.detail);
       }
     });
-    view.addEventListener('viewResponse', processCreate, false);
-    view.dispatchEvent(event);
-    function processCreate(e) { // eslint-disable-line require-jsdoc
-      view.removeEventListener('viewResponse', processCreate, false);
-      fulfill(e.detail);
-    }
   });
 };
 
@@ -132,22 +144,26 @@ UpBinding.prototype.creator = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.updater = function(data) {
-  var view = this.view;
   var eventType = this.updaterName;
   var value = this.value;
-  return new Promise(function(fulfill) {
-    var event = new CustomEvent(eventType, {
-      detail: {
-        ref: value,
-        data: data
+
+  return this.getParentView.then(function(view) {
+    return new Promise(function(fulfill) {
+      var event = new CustomEvent(eventType, {
+        detail: {
+          ref: value,
+          data: data
+        }
+      });
+
+      view.addEventListener('viewResponse', processUpdate, false);
+      view.dispatchEvent(event);
+
+      function processUpdate(e) { // eslint-disable-line require-jsdoc
+        view.removeEventListener('viewResponse', processUpdate, false);
+        fulfill(e.detail);
       }
     });
-    view.addEventListener('viewResponse', processUpdate, false);
-    view.dispatchEvent(event);
-    function processUpdate(e) { // eslint-disable-line require-jsdoc
-      view.removeEventListener('viewResponse', processUpdate, false);
-      fulfill(e.detail);
-    }
   });
 };
 
@@ -157,22 +173,26 @@ UpBinding.prototype.updater = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.remover = function(data) {
-  var view = this.view;
   var eventType = this.removerName;
   var value = this.value;
-  return new Promise(function(fulfill) {
-    var event = new CustomEvent(eventType, {
-      detail: {
-        ref: value,
-        data: data
+
+  return this.getParentView.then(function(view) {
+    return new Promise(function(fulfill) {
+      var event = new CustomEvent(eventType, {
+        detail: {
+          ref: value,
+          data: data
+        }
+      });
+
+      view.addEventListener('viewResponse', processRemove, false);
+      view.dispatchEvent(event);
+
+      function processRemove(e) { // eslint-disable-line require-jsdoc
+        view.removeEventListener('viewResponse', processRemove, false);
+        fulfill(e.detail);
       }
     });
-    view.addEventListener('viewResponse', processRemove, false);
-    view.dispatchEvent(event);
-    function processRemove(e) { // eslint-disable-line require-jsdoc
-      view.removeEventListener('viewResponse', processRemove, false);
-      fulfill(e.detail);
-    }
   });
 };
 

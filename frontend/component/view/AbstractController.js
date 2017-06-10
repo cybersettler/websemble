@@ -35,7 +35,7 @@ function AbstractController(args) {
   var scope = args[1];
 
   scope.onAttached.then(function() {
-    ApiService.bindApiDownward(controller);
+    ApiService.addViewApi(controller);
   });
 
   /**

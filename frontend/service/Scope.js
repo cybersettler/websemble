@@ -47,7 +47,11 @@
    var e = this._state.view;
    return this.onAttached.then(function() {
      while (e && !isViewComponent(e)) {
-       e = e.parentNode;
+       if (e.parentNode) {
+         e = e.parentNode;
+       } else {
+         e = e.host;
+       }
      }
      return e;
    });
@@ -151,7 +155,7 @@
  };
 
  function isViewComponent(el) { // eslint-disable-line require-jsdoc
-   return /^view-/.test(el.tagName.toLowerCase());
+   return el.tagName && /^view-/.test(el.tagName.toLowerCase());
  }
 
  function getNavigationDataFromUrl(url) { // eslint-disable-line require-jsdoc
