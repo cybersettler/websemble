@@ -4,6 +4,7 @@
  */
 
  const ApiService = require('./ApiService.js');
+ const functionalNotationPattern = /^->f[(](.*)[)]/;
  var BackendService;
 
 /* eslint-env browser */
@@ -147,11 +148,30 @@
 /**
  * Binds a list of data attributes from the element to a
  * parent element API.
- * @param {string[]} attributeList - An array of the attributes excluding the
- * 'data-' part.
+ * @param {string[]} attributeList - An array of the attributes
+ * excluding the 'data-' part.
  */
  Scope.prototype.bindAttributes = function(attributeList) {
    ApiService.bindAttributes(attributeList, this, this._state.view);
+ };
+
+/**
+ * Returns the arguments specified in a functional
+ * notation expression.
+ * @param {string} exp - Functional notation expression
+ * @return {Array|Object} Arguments
+ */
+ Scope.prototype.getFunctionalNotationArguments = function(exp) {
+   var match = functionalNotationPattern.exec(exp);
+   if (match.length < 2) {
+     return;
+   }
+
+   if (match[1].indexOf(',') === -1) {
+     return match[1];
+   }
+
+   return match[1].split(',');
  };
 
  function isViewComponent(el) { // eslint-disable-line require-jsdoc
