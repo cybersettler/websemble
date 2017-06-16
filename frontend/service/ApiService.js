@@ -21,11 +21,20 @@ function addApi(eventType) { // eslint-disable-line require-jsdoc
   });
 }
 
+function aumentScopeWithGetterMethod(prop, scope, view) { // eslint-disable-line require-jsdoc
+  var getter = BindingMethodNameService.getBindingMethodNames(prop).getterName;
+  scope[getter] = function() {
+    return Promise.resolve(view.dataset[prop]);
+  };
+}
+
 function augmentScope(prop) { // eslint-disable-line require-jsdoc
   if (BackendPattern.test(this.view.dataset[prop])) {
     augmentScopeWithBackendBindings(prop, this.scope, this.view);
   } else if (attributeValueApiPattern.test(this.view.dataset[prop])) {
     augmentScopeWithBindingMethods(prop, this.scope, this.view);
+  } else {
+    aumentScopeWithGetterMethod(prop, this.scope, this.view);
   }
 }
 
