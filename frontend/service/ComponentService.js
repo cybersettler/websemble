@@ -57,17 +57,6 @@ module.exports = {
       };
     });
 
-    // Fires when an attribute was added, removed, or updated
-    var onAttributeChanged = new Promise(function(fulfill) {
-      elementProto.attributeChangedCallback = function(attr, oldVal, newVal) {
-        fulfill({
-          attribute: attr,
-          oldValue: oldVal,
-          newValue: newVal
-        });
-      };
-    });
-
     var localContext = (document._currentScript ||
       document.currentScript).ownerDocument; // #document,
 
@@ -75,8 +64,25 @@ module.exports = {
       localContext: localContext,
       onAttached: onAttached,
       onDetached: onDetached,
-      onAttributeChanged: onAttributeChanged,
       afterAppAttached: afterAppAttached
+    };
+
+    // Fires when an attribute was added, removed, or updated
+    scopeState.onAttributeChanged = {
+      then: function(fulfill) {
+        scopeState._onAttributeChange = fulfill;
+        return Promise.resolve();
+      }
+    };
+
+    elementProto.attributeChangedCallback = function(attr, oldVal, newVal) {
+      if (scopeState._onAttributeChange) {
+        scopeState._onAttributeChange({
+          attribute: attr,
+          oldValue: oldVal,
+          newValue: newVal
+        });
+      }
     };
 
     var ViewController = ClassUtil.extend(
