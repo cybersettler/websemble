@@ -34,9 +34,15 @@ function App() {
     }
   });
 
-  // This method will be called when Electron has done everything
-  // initialization and ready for creating browser windows.
-  app.on('ready', function() {
+    var onReady = new Promise(function(fulfill) {
+        app.on('ready', fulfill);
+    });
+
+    this.onReady = onReady;
+
+    // This method will be called when Electron has done everything
+    // initialization and ready for creating browser windows.
+    onReady.then(function() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
       width: 800,
