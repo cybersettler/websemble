@@ -18,6 +18,7 @@ function AbstractController(args) {
   const Menu = remote.Menu;
   const ResourceBundleManager = require(
     '../../service/ResourceBundleManager.js');
+  const ApiService = require('../../service/ApiService.js');
 
   var appElement = args[0];
   var scope = args[1];
@@ -36,6 +37,11 @@ function AbstractController(args) {
   var menu = {};
   var views = {};
   var components = {};
+
+  // Add view API
+  scope.onAttached.then(function() {
+    ApiService.addViewApi(controller);
+  });
 
   /**
    * Instantiates an Electron remote Menu.

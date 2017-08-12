@@ -54,7 +54,7 @@
          e = e.host;
        }
      }
-     return e;
+       return e ? e : document.querySelector('core-app');
    });
  };
 
