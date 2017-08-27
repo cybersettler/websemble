@@ -20,6 +20,7 @@
    this.onAttached = state.onAttached;
    this.onDetached = state.onDetached;
    this.onAttributeChanged = state.onAttributeChanged;
+   this.onAppReady = state.onAppReady;
    this.resolveAppReady = state.resolveAppReady;
    addShadowRootTemplate(this);
    addMainTemplate(this);
