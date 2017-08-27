@@ -18,6 +18,7 @@ const ViewAbstractController = require(
     '../component/view/AbstractController.js');
 var afterAppCreated;
 var afterAppAttached;
+var onAppReady;
 
 module.exports = {
   createComponent: function(elementName) { // eslint-disable-line require-jsdoc
@@ -64,8 +65,17 @@ module.exports = {
       localContext: localContext,
       onAttached: onAttached,
       onDetached: onDetached,
-      afterAppAttached: afterAppAttached
+      afterAppAttached: afterAppAttached,
+      onAppReady: onAppReady
     };
+
+    if (isAppComponent(elementName)) {
+      onAppReady = new Promise(function(fulfill) {
+        scopeState.resolveAppReady = function() {
+          fulfill(this);
+        };
+      });
+    }
 
     // Fires when an attribute was added, removed, or updated
     scopeState.onAttributeChanged = {

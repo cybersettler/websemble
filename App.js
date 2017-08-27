@@ -35,7 +35,7 @@ function App() {
   });
 
   var onReady = new Promise(function(fulfill) {
-      app.on('ready', fulfill);
+    app.on('ready', fulfill);
   });
 
   this.onReady = onReady;

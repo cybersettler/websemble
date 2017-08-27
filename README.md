@@ -59,10 +59,15 @@ View file for the App.
 ```javascript
 function AppController( view, scope ){
   this.super( view, scope );
+  scope.resolveAppReady();
 }
 
 module.exports = AppController;
 ```
+
+The resoleveAppReady funtion call lets the other components
+know that the app has finished initializing. You may want to
+call this method after assets are loaded, for example.
 
 ```html
 <template class="main">
