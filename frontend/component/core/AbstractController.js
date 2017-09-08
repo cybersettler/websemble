@@ -5,6 +5,8 @@
 
  /* global document, Event */
 
+const viewTagnamePattern = /^view[-]/;
+
 /**
  * Abstract controller extended by core-app controller.
  * @constructor
@@ -155,8 +157,12 @@ function AbstractController(args) {
    */
   this.clearViews = function() {
     var view = this.getView();
-    while (view.firstChild) {
-      view.removeChild(view.lastChild);
+    Array.from(view.childNodes)
+        .forEach(removeViewNode);
+    function removeViewNode(node) {
+      if (isViewNode(node)) {
+        view.removeChild(node);
+      }
     }
     return this;
   };
@@ -211,6 +217,12 @@ function AbstractController(args) {
   appElement.addEventListener('setView', function(e) {
     controller.setView(e.detail);
   });
+}
+
+function isViewNode(node) {
+  return node.tagName &&
+      viewTagnamePattern.test(
+          node.tagName.toLowerCase());
 }
 
 module.exports = AbstractController;
