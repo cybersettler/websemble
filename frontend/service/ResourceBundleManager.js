@@ -1,5 +1,5 @@
 const i18next = require('i18next');
-const Handlebars = require('Handlebars');
+const Handlebars = require('handlebars');
 
 /**
  * Manage resource boundles for tranlations.
