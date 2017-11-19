@@ -159,7 +159,7 @@ function AbstractController(args) {
     var view = this.getView();
     Array.from(view.childNodes)
         .forEach(removeViewNode);
-    function removeViewNode(node) {
+    function removeViewNode(node) {  // eslint-disable-line require-jsdoc
       if (isViewNode(node)) {
         view.removeChild(node);
       }
@@ -219,7 +219,7 @@ function AbstractController(args) {
   });
 }
 
-function isViewNode(node) {
+function isViewNode(node) { // eslint-disable-line require-jsdoc
   return node.tagName &&
       viewTagnamePattern.test(
           node.tagName.toLowerCase());

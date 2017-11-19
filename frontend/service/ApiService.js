@@ -9,7 +9,7 @@ const UpBinding = require('./UpBinding.js');
 const ApiPattern = /^(?:get|set|on|create|update|remove)(\w+)/;
 const BackendPattern = /^\//;
 const BindingMethodNameService = require('./BindingMethodNameService.js');
-const attributeValueApiPattern = /^->f[(]/;
+const attributeValueApiPattern = /^->f[(]|^{\w+}$/;
 
 function addApi(eventType) { // eslint-disable-line require-jsdoc
   var controller = this;

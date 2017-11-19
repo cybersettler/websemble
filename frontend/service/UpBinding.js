@@ -18,7 +18,7 @@ function UpBinding(attributeName, value, getParentView) {
   this.getParentView = getParentView;
   this.attributeName = attributeName;
   var methodNames = BindingMethodNameService
-                      .getBindingMethodNames(attributeName);
+                      .getBindingMethodNames(attributeName, value);
   this.value = value;
   this.getterName = methodNames.getterName;
   this.setterName = methodNames.setterName;
