@@ -6,6 +6,7 @@
  /* eslint-env browser */
 
 const BindingMethodNameService = require('./BindingMethodNameService.js');
+const CustomMethodPattern = /^{(\w+)}$/;
 
 /**
  * Instantiates a parent binding.
@@ -18,7 +19,8 @@ function UpBinding(attributeName, value, getParentView) {
   this.getParentView = getParentView;
   this.attributeName = attributeName;
   var methodNames = BindingMethodNameService
-                      .getBindingMethodNames(attributeName, value);
+                      .getBindingMethodNames(attributeName);
+
   this.value = value;
   this.getterName = methodNames.getterName;
   this.setterName = methodNames.setterName;
@@ -26,6 +28,10 @@ function UpBinding(attributeName, value, getParentView) {
   this.updaterName = methodNames.updaterName;
   this.removerName = methodNames.removerName;
   this.onName = methodNames.onName;
+
+  this.eventTypes = CustomMethodPattern.test(value) ?
+      BindingMethodNameService
+          .getBindingMethodNames(CustomMethodPattern.exec(value)[1]) : methodNames;
 }
 
 /**
@@ -33,7 +39,7 @@ function UpBinding(attributeName, value, getParentView) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.getter = function() {
-  var eventType = this.getterName;
+  var eventType = this.eventTypes.getterName;
   var value = this.value;
   return this.getParentView.then(function(view) {
     return new Promise(function(fulfill) {
@@ -60,7 +66,7 @@ UpBinding.prototype.getter = function() {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.setter = function(data) {
-  var eventType = this.setterName;
+  var eventType = this.eventTypes.setterName;
   var value = this.value;
   return this.getParentView.then(function(view) {
     return new Promise(function(fulfill) {
@@ -88,7 +94,7 @@ UpBinding.prototype.setter = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.on = function(data) {
-  var eventType = this.onName;
+  var eventType = this.eventTypes.onName;
   var value = this.value;
   return this.getParentView.then(function(view) {
     return new Promise(function(fulfill) {
@@ -116,7 +122,7 @@ UpBinding.prototype.on = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.creator = function(data) {
-  var eventType = this.creatorName;
+  var eventType = this.eventTypes.creatorName;
   var value = this.value;
   return this.getParentView.then(function(view) {
     return new Promise(function(fulfill) {
@@ -144,7 +150,7 @@ UpBinding.prototype.creator = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.updater = function(data) {
-  var eventType = this.updaterName;
+  var eventType = this.eventTypes.updaterName;
   var value = this.value;
 
   return this.getParentView.then(function(view) {
@@ -173,7 +179,7 @@ UpBinding.prototype.updater = function(data) {
  * @return {Promise} A promise that resolves to the handler's return data.
  */
 UpBinding.prototype.remover = function(data) {
-  var eventType = this.removerName;
+  var eventType = this.eventTypes.removerName;
   var value = this.value;
 
   return this.getParentView.then(function(view) {

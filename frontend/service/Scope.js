@@ -5,6 +5,7 @@
 
  const ApiService = require('./ApiService.js');
  const functionalNotationPattern = /^->f[(](.*)[)]/;
+ const TemplateEngineService = require('./TemplateEngineService.js');
  var BackendService;
 
 /* eslint-env browser */
@@ -22,6 +23,7 @@
    this.onAttributeChanged = state.onAttributeChanged;
    this.onAppReady = state.onAppReady;
    this.resolveAppReady = state.resolveAppReady;
+   this.templateEngine = TemplateEngineService.getInstance();
    addShadowRootTemplate(this);
    addMainTemplate(this);
  }

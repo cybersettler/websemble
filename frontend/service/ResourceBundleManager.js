@@ -1,5 +1,5 @@
 const i18next = require('i18next');
-const Handlebars = require('handlebars');
+const TemplateEngineService = require('./TemplateEngineService.js');
 
 /**
  * Manage resource boundles for tranlations.
@@ -30,9 +30,11 @@ ResourceBundleManager.prototype.loadResource = function(locale, namespace) {
       if (err) {
         throw new Error(err);
       }
-      Handlebars.registerHelper('i18n', function(key, opt) {
-        return t(key, opt);
-      });
+
+      TemplateEngineService.getInstance()
+          .registerHelper('i18n', function(key, opt) {
+            return t(key, opt);
+          });
     });
   });
 };
