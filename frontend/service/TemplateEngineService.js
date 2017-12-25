@@ -1,29 +1,33 @@
 const Handlebars = require("handlebars");
 
+/**
+ * Wrapper class for template engine implementation
+ * @constructor
+ */
 function TemplateEngine() {
-    this.hb = Handlebars;
+  this.hb = Handlebars;
 }
 
 TemplateEngine.prototype.render = function(template, data) {
-    var doRender = this.hb.compile(template);
-    return doRender(data);
+  var doRender = this.hb.compile(template);
+  return doRender(data);
 };
 
 TemplateEngine.prototype.compile = function(template) {
-    return this.hb.compile(template);
+  return this.hb.compile(template);
 };
 
 TemplateEngine.prototype.registerHelper = function(name, f) {
-    this.hb.registerHelper(name, f);
+  this.hb.registerHelper(name, f);
 };
 
 var instance;
 
 module.exports = {
-    getInstance: function() {
-        if (!instance) {
-            instance = new TemplateEngine();
-        }
-        return instance;
+  getInstance: function() {
+    if (!instance) {
+      instance = new TemplateEngine();
     }
+    return instance;
+  }
 };
