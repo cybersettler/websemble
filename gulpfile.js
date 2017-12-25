@@ -2,7 +2,7 @@ var gulp = require('gulp'),
     mocha = require('gulp-mocha'),
     chalk = require('chalk'),
     eslint = require('gulp-eslint'),
-    pkg = require('./package.json')
+    pkg = require('./package.json'),
     runSequence = require('run-sequence'),
     conventionalChangelog = require('gulp-conventional-changelog'),
     conventionalGithubReleaser = require('conventional-github-releaser'),
@@ -68,7 +68,7 @@ gulp.task('bump-version', function () {
 // use minimist (https://www.npmjs.com/package/minimist) to determine with a
 // command argument whether you are doing a 'major', 'minor' or a 'patch' change.
   var argv = parseArgs(process.argv.slice(2));
-  var versionType = argv.version || "minor";
+  var versionType = argv.version || "patch";
   return gulp.src(['./bower.json', './package.json'])
     .pipe(bump({type: versionType}).on('error', gutil.log))
     .pipe(gulp.dest('./'));

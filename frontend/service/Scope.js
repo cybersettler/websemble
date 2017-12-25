@@ -167,7 +167,7 @@
  */
  Scope.prototype.getFunctionalNotationArguments = function(exp) {
    var match = functionalNotationPattern.exec(exp);
-   if (match.length < 2) {
+   if (!match || match.length < 2) {
      return;
    }
 
