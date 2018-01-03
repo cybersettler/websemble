@@ -12,12 +12,9 @@ class ResourceIdentifier {
       .reduce(instantiateResource, {});
     function instantiateResource(result, resourceName) { // eslint-disable-line require-jsdoc
       let itemConfig = resources[resourceName];
-      if (resourceName === 'i18n' &&
-        typeof resources[resourceName] === 'string') {
+      if (typeof itemConfig === 'string') {
         itemConfig = {
-          type: 'messageBundle',
-          directory: resources[resourceName],
-          path: '/i18n'
+          type: itemConfig
         };
       }
       if (itemConfig.type === 'messageBundle') {

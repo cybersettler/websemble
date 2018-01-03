@@ -23,9 +23,7 @@ var config = {
     }]
   },
   resources: {
-    products: {
-      type: 'database'
-    }
+    products: 'database'
   }
 };
 

@@ -2,13 +2,14 @@ const path = require("path");
 const memFs = require('mem-fs');
 const editor = require('mem-fs-editor');
 const AbstractResource = require('./AbstractResource.js');
+const DEFAULT_DIRECTORY = 'frontend/assets/locales';
 
 class MessageBundleResource extends AbstractResource {
   constructor(name, config) {
     super(name, config);
     let store = memFs.create();
     this.fs = editor.create(store);
-    this.basePath = config.directory;
+    this.basePath = config.directory || DEFAULT_DIRECTORY;
   }
 
   get(request) {
