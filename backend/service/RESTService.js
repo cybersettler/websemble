@@ -6,9 +6,9 @@
  */
 
 const CatalogService = require('../dao/service/CatalogService.js');
-const ResourceBundleService = require(
-  '../dao/service/ResourceBundleService.js');
 const RESTResponse = require('./RESTResponse.js');
+const ResourceIdentifier = require('./ResourceIdentifier.js');
+var resourceIdentifier;
 
 module.exports = {
   /**
@@ -19,8 +19,7 @@ module.exports = {
    */
   init: function(config) {
     if (config) {
-      CatalogService.init(config.persistence);
-      ResourceBundleService.init(config.resources);
+      resourceIdentifier = new ResourceIdentifier(config);
     }
   },
   /**
@@ -29,37 +28,14 @@ module.exports = {
    * @return {Promise} A resource.
    */
   handleGet: function(url) {
-    var request = parseRequest(url);
+    let request = parseRequest(url);
+    let resource = getRequestedResource(request);
+    return resource.get(request)
+      .then(returnGetResponse);
 
-    if (request.resource.collection === "i18n") {
-      let resource = request.resource.documentId;
-      let locale = request.query.locale;
-      return ResourceBundleService.getResource(locale, resource)
-      .then(function(result) {
-        return new RESTResponse(url, "GET", result);
-      });
+    function returnGetResponse(result) { // eslint-disable-line require-jsdoc
+      return new RESTResponse(url, "GET", result);
     }
-
-    var collection = CatalogService.getCollection(request.resource.collection);
-    if (request.resource.documentId &&
-       request.resource.documentId === "schema") {
-      return collection.getSchema().then(function(result) {
-        return new RESTResponse(url, "GET", result);
-      });
-    } else if (request.resource.documentId) {
-      var query = {
-        _id: request.resource.documentId
-      };
-      return collection.findOne(query).then(
-        function(result) {
-          return new RESTResponse(url, "GET", result);
-        });
-    }
-
-    return collection.find(request.query).then(
-      function(result) {
-        return new RESTResponse(url, "GET", result);
-      });
   },
   /**
    * Handle POST request.
@@ -68,11 +44,14 @@ module.exports = {
    * @return {Promise} Created resource.
    */
   handlePost: function(url, data) {
-    var request = parseRequest(url);
-    var collection = CatalogService.getCollection(request.resource.collection);
-    return collection.insert(data).then(function(result) {
+    var request = parseRequest(url, data);
+    let resource = getRequestedResource(request);
+    return resource.post(request)
+      .then(returnResponse);
+
+    function returnResponse(result) { // eslint-disable-line require-jsdoc
       return new RESTResponse(url, "POST", result);
-    });
+    }
   },
   /**
    * Handle PUT request.
@@ -81,15 +60,14 @@ module.exports = {
    * @return {Promise} Updated resource.
    */
   handlePut: function(url, data) {
-    var request = parseRequest(url);
-    var collection = CatalogService.getCollection(request.resource.collection);
-    var query = {
-      _id: request.resource.documentId
-    };
-    return collection.update(query, data).then(
-      function(result) {
-        return new RESTResponse(url, "PUT", result);
-      });
+    let request = parseRequest(url, data);
+    let resource = getRequestedResource(request);
+    return resource.put(request)
+      .then(returnResponse);
+
+    function returnResponse(result) { // eslint-disable-line require-jsdoc
+      return new RESTResponse(url, "PUT", result);
+    }
   },
   /**
    * Handle PATCH request.
@@ -98,15 +76,14 @@ module.exports = {
    * @return {Promise} Updated resource.
    */
   handlePatch: function(url, data) {
-    var request = parseRequest(url);
-    var collection = CatalogService.getCollection(request.resource.collection);
-    var query = {
-      _id: request.resource.documentId
-    };
-    return collection.patch(query, data).then(
-      function(result) {
-        return new RESTResponse(url, "PATCH", result);
-      });
+    let request = parseRequest(url, data);
+    let resource = getRequestedResource(request);
+    return resource.patch(request)
+      .then(returnResponse);
+
+    function returnResponse(result) { // eslint-disable-line require-jsdoc
+      return new RESTResponse(url, "PATCH", result);
+    }
   },
   /**
    * Handle DELETE request.
@@ -114,19 +91,30 @@ module.exports = {
    * @return {Promise} The number of deleted resources.
    */
   handleDelete: function(url) {
-    var request = parseRequest(url);
-    var collection = CatalogService.getCollection(request.resource.collection);
-    var query = {
-      _id: request.resource.documentId
-    };
-    return collection.remove(query).then(
-      function(result) {
-        return new RESTResponse(url, "DELETE", result);
-      });
+    let request = parseRequest(url);
+    let resource = getRequestedResource(request);
+    return resource.delete(request)
+      .then(returnResponse);
+
+    function returnResponse(result) { // eslint-disable-line require-jsdoc
+      return new RESTResponse(url, "DELETE", result);
+    }
   }
 };
 
-function parseRequest(request) { // eslint-disable-line require-jsdoc
+function getRequestedResource(request) { // eslint-disable-line require-jsdoc
+  let resource = resourceIdentifier.getRequestedResource(request);
+
+  // Deprecated, all resources should be declared
+  // in the backend configuration
+  if (!resource) {
+    throw new Error('Resource ' + request.uri + ' not found');
+  }
+
+  return resource;
+}
+
+function parseRequest(request, data) { // eslint-disable-line require-jsdoc
   var parts = decodeURI(request).split("?");
   var uri = parts[0];
   var resource = parseResource(uri);
@@ -148,7 +136,8 @@ function parseRequest(request) { // eslint-disable-line require-jsdoc
   return {
     uri: parts[0],
     query: query,
-    resource: resource
+    resource: resource,
+    body: data
   };
 }
 
@@ -181,5 +170,6 @@ function parseQuery(queryString, schema) { // eslint-disable-line require-jsdoc
     }
     result[key] = value;
   }
+
   return result;
 }

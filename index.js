@@ -9,6 +9,12 @@ module.exports = {
   /** Backend */
   backend: {
     /** @class */
-    App: require('./App.js')
+    App: require('./App.js'),
+    resource: {
+      AbstractResource: require('./backend/resource/AbstractResource.js'),
+      DatabaseResource: require('./backend/resource/DatabaseResource.js'),
+      MessageBundleResource: require(
+        './backend/resource/MessageBundleResource.js')
+    }
   }
 };

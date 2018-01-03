@@ -3,7 +3,7 @@
  * @module frontend/service/UpBinding
  */
 
- /* eslint-env browser */
+/* eslint-env browser */
 
 const BindingMethodNameService = require('./BindingMethodNameService.js');
 const CustomMethodPattern = /^{(\w+)}$/;
@@ -19,7 +19,7 @@ function UpBinding(attributeName, value, getParentView) {
   this.getParentView = getParentView;
   this.attributeName = attributeName;
   var methodNames = BindingMethodNameService
-                      .getBindingMethodNames(attributeName);
+    .getBindingMethodNames(attributeName);
 
   this.value = value;
   this.getterName = methodNames.getterName;
@@ -30,8 +30,10 @@ function UpBinding(attributeName, value, getParentView) {
   this.onName = methodNames.onName;
 
   this.eventTypes = CustomMethodPattern.test(value) ?
-      BindingMethodNameService
-          .getBindingMethodNames(CustomMethodPattern.exec(value)[1]) : methodNames;
+    BindingMethodNameService
+      .getBindingMethodNames(CustomMethodPattern
+        .exec(value)[1]) :
+    methodNames;
 }
 
 /**

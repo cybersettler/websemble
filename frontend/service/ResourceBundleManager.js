@@ -18,7 +18,7 @@ function ResourceBundleManager(scope) {
  */
 ResourceBundleManager.prototype.loadResource = function(locale, namespace) {
   namespace = namespace || 'translation';
-  var resourceUrl = 'i18n/' + namespace + '?locale=' + locale;
+  var resourceUrl = '/i18n/' + namespace + '?locale=' + locale;
   var config = {
     lng: locale,
     resources: {}
