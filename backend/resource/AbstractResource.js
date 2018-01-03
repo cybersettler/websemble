@@ -1,5 +1,6 @@
 class AbstractResource {
   constructor(name, config) {
+    config.path = config.path || '/' + name;
     this.type = config.type;
     this.path = config.path;
     this.name = name;

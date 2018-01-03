@@ -3,7 +3,6 @@ const CatalogService = require('../dao/service/CatalogService.js');
 
 class DatabaseResource extends AbstractResource {
   constructor(name, config) {
-    config.path = config.path || '/' + name;
     super(name, config);
     let collectionName = config.collection || name;
     this.collection = CatalogService.getCollection(collectionName);
