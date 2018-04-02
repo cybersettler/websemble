@@ -1,5 +1,10 @@
+<a name="6.0.3"></a>
+## [6.0.3](https://github.com/cybersettler/websemble/compare/6.0.2...v6.0.3) (2018-04-02)
+
+
+
 <a name="6.0.2"></a>
-## [6.0.2](https://github.com/cybersettler/websemble/compare/6.0.1...v6.0.2) (2018-01-03)
+## [6.0.2](https://github.com/cybersettler/websemble/compare/6.0.1...6.0.2) (2018-01-03)
 
 
 
