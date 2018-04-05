@@ -25,17 +25,16 @@
  * Find by resource id.
  * @function
  * @name DAOInterface#findOne
- * @param {Object} query - A query object.
+ * @param {string | Object} query - An id or query object.
  * @returns {Promise} A promise that resolves to
  * the found resource or null.
  */
 
 /**
- * Update resource overwritting existing data.
+ * Update resource overwriting existing data.
  * @function
  * @name DAOInterface#update
- * @param {string} id - Resource id, required.
- * @param {Object} [query] - A query object.
+ * @param {string | Object} query - An id or query object.
  * @param {Object} update - Attributes to be updated.
  * @param {Object} [options] - An options object.
  * @returns {Promise} A promise that resolves to number of affected documents.

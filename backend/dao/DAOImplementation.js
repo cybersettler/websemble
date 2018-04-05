@@ -1,4 +1,4 @@
-const Datastore = require('nedb');
+const DataStore = require('nedb');
 const memFs = require('mem-fs');
 const editor = require('mem-fs-editor');
 const store = memFs.create();
@@ -14,6 +14,7 @@ const tv4 = require("tv4");
  * @param {Object} config - Configuration.
  * @param {string} config.collectionName - Collection name.
  * @param {Object} config.schema - Collection schema.
+ * @param {Object} config.basePath - Base path to collection data folder.
  * @param {string} [config.filename] - Path to the
  * file where the data is persisted. If left blank,
  * the datastore is automatically considered in-memory
@@ -68,20 +69,82 @@ const tv4 = require("tv4");
  * localCompare will most of the time be the right choice.
  */
 function DAOImplementation(config) {
-  this.collection = new Datastore(config);
+  let basePath = config.basePath || 'backend/persistence/catalog/';
+  let isDBloaded = true;
+  if (config.filename) {
+    config.filename = basePath + config.filename;
+  }
   if (config.schema) {
-    var basePath = config.basePath || 'backend/persistence/catalog/';
     this.schema = fs.readJSON(path.join(appRoot.toString(),
-    basePath, config.schema));
+      basePath, config.schema));
   } else {
     this.schema = {};
   }
+  let db = new DataStore(config);
+  if (config.filename && !config.autoload) {
+    isDBloaded = false;
+  }
+  this.collection = db;
+  this.isDBloaded = isDBloaded;
 }
 
 DAOImplementation.prototype.find = function(query, options) {
+  return loadDB(this)
+    .then(db => find(db, query, options));
+};
+
+DAOImplementation.prototype.findOne = function(query) {
+  if (typeof query === 'string') {
+    query = {_id: query};
+  }
+  return loadDB(this)
+    .then(db => findOne(db, query));
+};
+
+DAOImplementation.prototype.insert = function(data) {
+  let dao = this;
+  return loadDB(this)
+    .then(() => insert(dao, data));
+};
+
+DAOImplementation.prototype.update = function(query, data, options) {
+  let dao = this;
+  if (typeof query === 'string') {
+    query = {_id: query};
+  }
+  return loadDB(this)
+    .then(() => update(dao, query, data, options));
+};
+
+DAOImplementation.prototype.patch = function(query, change) {
+  let dao = this;
+  // update['$set'] = change; // we could use set to make a patch
+
+  return this.findOne(query)
+    .then(function(result) {
+      let update = Object.keys(change)
+        .reduce(function(doc, prop) {
+          doc[prop] = change[prop];
+          return doc;
+        }, result);
+      return dao.update(query, update);
+    });
+};
+
+DAOImplementation.prototype.remove = function(query, options) {
+  let dao = this;
+  return loadDB(this)
+    .then(() => remove(dao, query, options));
+};
+
+DAOImplementation.prototype.getSchema = function() {
+  return Promise.resolve(this.schema);
+};
+
+function find(db, query, options) { // eslint-disable-line require-jsdoc
   options = options || {};
   query = query || {};
-  var search = this.collection.find(query);
+  var search = db.find(query);
   if (options.sort) {
     search.sort(options.sort);
   }
@@ -100,12 +163,11 @@ DAOImplementation.prototype.find = function(query, options) {
       }
     });
   });
-};
+}
 
-DAOImplementation.prototype.findOne = function(query) {
-  var collection = this.collection;
+function findOne(db, query) { // eslint-disable-line require-jsdoc
   return new Promise(function(fulfill, reject) {
-    collection.findOne(query, function(err, doc) {
+    db.findOne(query, function(err, doc) {
       if (err) {
         reject(err);
       } else {
@@ -113,12 +175,12 @@ DAOImplementation.prototype.findOne = function(query) {
       }
     });
   });
-};
+}
 
-DAOImplementation.prototype.insert = function(data) {
-  var collection = this.collection;
-  var schema = this.schema;
-  var isValid = true;
+function insert(dao, data) { // eslint-disable-line require-jsdoc
+  let db = dao.collection;
+  let schema = dao.schema;
+  let isValid = true;
 
   if (Array.isArray(data)) {
     data.some(function(item) {
@@ -133,7 +195,7 @@ DAOImplementation.prototype.insert = function(data) {
     if (!isValid) {
       reject(new Error("422"));
     }
-    collection.insert(data, function(err, doc) {
+    db.insert(data, function(err, doc) {
       if (err) {
         reject(err);
       } else {
@@ -141,18 +203,18 @@ DAOImplementation.prototype.insert = function(data) {
       }
     });
   });
-};
+}
 
-DAOImplementation.prototype.update = function(query, update, options) {
+function update(dao, query, data, options) { // eslint-disable-line require-jsdoc
   query = query || {};
   options = options || {};
-  var collection = this.collection;
-  var schema = this.schema;
+  let db = dao.collection;
+  let schema = dao.schema;
   return new Promise(function(fulfill, reject) {
-    if (!tv4.validate(update, schema)) {
+    if (!tv4.validate(data, schema)) {
       reject(new Error("422"));
     }
-    collection.update(query, update, options,
+    db.update(query, data, options,
       function(err, numAffected) { // callback params: err, numAffected, affectedDocuments
         if (err) {
           reject(err);
@@ -161,26 +223,14 @@ DAOImplementation.prototype.update = function(query, update, options) {
         }
       });
   });
-};
+}
 
-DAOImplementation.prototype.patch = function(query, change) {
-  var dao = this;
-  // update['$set'] = change; // we could use set to make a patch
-  return this.findOne(query).then(function(result) {
-    var update = Object.keys(change).reduce(function(doc, prop) {
-      doc[prop] = change[prop];
-      return doc;
-    }, result);
-    return dao.update(query, update);
-  });
-};
-
-DAOImplementation.prototype.remove = function(query, options) {
+function remove(dao, query, options) { // eslint-disable-line require-jsdoc
   query = query || {};
   options = options || {};
-  var collection = this.collection;
+  let db = dao.collection;
   return new Promise(function(fulfill, reject) {
-    collection.remove(query, options,
+    db.remove(query, options,
       function(err, numAffected) {
         if (err) {
           reject(err);
@@ -189,10 +239,22 @@ DAOImplementation.prototype.remove = function(query, options) {
         }
       });
   });
-};
+}
 
-DAOImplementation.prototype.getSchema = function() {
-  return Promise.resolve(this.schema);
-};
+function loadDB(dao) { // eslint-disable-line require-jsdoc
+  let result;
+  let db = dao.collection;
+  let isDBloaded = dao.isDBloaded;
+  if (isDBloaded) {
+    result = Promise.resolve(db);
+  } else {
+    result = db.loadDatabase()
+      .then(function() {
+        dao.isDBloaded = true;
+        return db;
+      });
+  }
+  return result;
+}
 
 module.exports = DAOImplementation;
