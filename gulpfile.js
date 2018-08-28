@@ -12,10 +12,6 @@ var gulp = require('gulp'),
     fs = require('fs'),
     parseArgs = require('minimist');
 
-gulp.task('default',['lint','test'],function() {
-  console.log(chalk.green("Build successful"));
-});
-
 // Lint JavaScript
 gulp.task('lint', function() {
   return gulp.src([
@@ -27,20 +23,24 @@ gulp.task('lint', function() {
   ])
   // eslint() attaches the lint output to the "eslint" property
   // of the file object so it can be used by other modules.
-  .pipe(eslint())
-  // eslint.format() outputs the lint results to the console.
-  // Alternatively use eslint.formatEach() (see Docs).
-  .pipe(eslint.format())
-  // To have the process exit with an error code (1) on
-  // lint error, return the stream and pipe to failAfterError last.
-  .pipe(eslint.failAfterError());
+    .pipe(eslint())
+    // eslint.format() outputs the lint results to the console.
+    // Alternatively use eslint.formatEach() (see Docs).
+    .pipe(eslint.format())
+    // To have the process exit with an error code (1) on
+    // lint error, return the stream and pipe to failAfterError last.
+    .pipe(eslint.failAfterError());
 });
 
 // Run JavaScript tests
 gulp.task('test', function() {
   return gulp.src(['test/**/*Test.js'], { read: false })
     .pipe(mocha());
-  });
+});
+
+gulp.task('default', gulp.series('lint', 'test'), function() {
+  console.log(chalk.green("Build successful"));
+});
 
 gulp.task('changelog', function () {
   return gulp.src('CHANGELOG.md', {
