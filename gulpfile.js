@@ -1,16 +1,15 @@
-var gulp = require('gulp'),
-    mocha = require('gulp-mocha'),
-    chalk = require('chalk'),
-    eslint = require('gulp-eslint'),
-    pkg = require('./package.json'),
-    runSequence = require('run-sequence'),
-    conventionalChangelog = require('gulp-conventional-changelog'),
-    conventionalGithubReleaser = require('conventional-github-releaser'),
-    bump = require('gulp-bump'),
-    gutil = require('gulp-util'),
-    git = require('gulp-git'),
-    fs = require('fs'),
-    parseArgs = require('minimist');
+const gulp = require('gulp');
+const mocha = require('gulp-mocha');
+const chalk = require('chalk');
+const eslint = require('gulp-eslint');
+const runSequence = require('run-sequence');
+const conventionalChangelog = require('gulp-conventional-changelog');
+const conventionalGithubReleaser = require('conventional-github-releaser');
+const bump = require('gulp-bump');
+const gutil = require('gulp-util');
+const git = require('gulp-git');
+const fs = require('fs');
+const parseArgs = require('minimist');
 
 // Lint JavaScript
 gulp.task('lint', function(done) {
@@ -35,7 +34,7 @@ gulp.task('lint', function(done) {
 
 // Run JavaScript tests
 gulp.task('test', function(done) {
-  return gulp.src(['test/**/*Test.js'], { read: false })
+  return gulp.src(['test/**/*Test.js'], {read: false})
     .pipe(mocha())
     .on('end', () => done());
 });
@@ -45,7 +44,7 @@ gulp.task('default', gulp.series('lint', 'test'), function(done) {
   done();
 });
 
-gulp.task('changelog', function (done) {
+gulp.task('changelog', function(done) {
   return gulp.src('CHANGELOG.md', {
     buffer: false
   })
@@ -54,7 +53,7 @@ gulp.task('changelog', function (done) {
       releaseCount: 0
     }))
     .pipe(gulp.dest('./'))
-    .on('end', () => done());;
+    .on('end', () => done());
 });
 
 gulp.task('github-release', function(done) {
@@ -67,7 +66,7 @@ gulp.task('github-release', function(done) {
   }, done);
 });
 
-gulp.task('bump-version', function (done) {
+gulp.task('bump-version', function(done) {
 // We hardcode the version change type to 'patch' but it may be a good idea to
 // use minimist (https://www.npmjs.com/package/minimist) to determine with a
 // command argument whether you are doing a 'major', 'minor' or a 'patch' change.
@@ -79,34 +78,34 @@ gulp.task('bump-version', function (done) {
     .on('end', () => done());
 });
 
-gulp.task('commit-changes', function (done) {
+gulp.task('commit-changes', function(done) {
   return gulp.src('.')
     .pipe(git.add())
     .pipe(git.commit('[Prerelease] Bumped version number'))
-    .on('end', () => done());;
+    .on('end', () => done());
 });
 
-gulp.task('push-changes', function (cb) {
+gulp.task('push-changes', function(cb) {
   git.push('origin', 'master', cb);
 });
 
-gulp.task('create-new-tag', function (cb) {
+gulp.task('create-new-tag', function(cb) {
   var version = getPackageJsonVersion();
-  git.tag(version, 'Created Tag for version: ' + version, function (error) {
+  git.tag(version, 'Created Tag for version: ' + version, function(error) {
     if (error) {
       return cb(error);
     }
     git.push('origin', 'master', {args: '--tags'}, cb);
   });
 
-  function getPackageJsonVersion () {
+  function getPackageJsonVersion() {
     // We parse the json file instead of using require because require caches
     // multiple calls so the version number won't be updated
     return JSON.parse(fs.readFileSync('./package.json', 'utf8')).version;
-  };
+  }
 });
 
-gulp.task('release', function (callback) {
+gulp.task('release', function(callback) {
   runSequence(
     'bump-version',
     'changelog',
@@ -114,7 +113,7 @@ gulp.task('release', function (callback) {
     'push-changes',
     'create-new-tag',
     'github-release',
-    function (error) {
+    function(error) {
       if (error) {
         console.log(error.message);
       } else {
