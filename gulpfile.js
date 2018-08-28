@@ -72,7 +72,7 @@ gulp.task('bump-version', function(done) {
 // command argument whether you are doing a 'major', 'minor' or a 'patch' change.
   var argv = parseArgs(process.argv.slice(2));
   var versionType = argv.version || "minor";
-  return gulp.src(['./bower.json', './package.json'])
+  return gulp.src(['./package.json'])
     .pipe(bump({type: versionType}).on('error', gutil.log))
     .pipe(gulp.dest('./'))
     .on('end', () => done());
