@@ -13,7 +13,7 @@ var gulp = require('gulp'),
     parseArgs = require('minimist');
 
 // Lint JavaScript
-gulp.task('lint', function() {
+gulp.task('lint', function(done) {
   return gulp.src([
     './App.js',
     './index.js',
@@ -29,20 +29,23 @@ gulp.task('lint', function() {
     .pipe(eslint.format())
     // To have the process exit with an error code (1) on
     // lint error, return the stream and pipe to failAfterError last.
-    .pipe(eslint.failAfterError());
+    .pipe(eslint.failAfterError())
+    .on('end', () => done());
 });
 
 // Run JavaScript tests
-gulp.task('test', function() {
+gulp.task('test', function(done) {
   return gulp.src(['test/**/*Test.js'], { read: false })
-    .pipe(mocha());
+    .pipe(mocha())
+    .on('end', () => done());
 });
 
-gulp.task('default', gulp.series('lint', 'test'), function() {
+gulp.task('default', gulp.series('lint', 'test'), function(done) {
   console.log(chalk.green("Build successful"));
+  done();
 });
 
-gulp.task('changelog', function () {
+gulp.task('changelog', function (done) {
   return gulp.src('CHANGELOG.md', {
     buffer: false
   })
@@ -50,7 +53,8 @@ gulp.task('changelog', function () {
       preset: 'angular', // Or to any other commit message convention you use.
       releaseCount: 0
     }))
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('./'))
+    .on('end', () => done());;
 });
 
 gulp.task('github-release', function(done) {
@@ -63,7 +67,7 @@ gulp.task('github-release', function(done) {
   }, done);
 });
 
-gulp.task('bump-version', function () {
+gulp.task('bump-version', function (done) {
 // We hardcode the version change type to 'patch' but it may be a good idea to
 // use minimist (https://www.npmjs.com/package/minimist) to determine with a
 // command argument whether you are doing a 'major', 'minor' or a 'patch' change.
@@ -71,13 +75,15 @@ gulp.task('bump-version', function () {
   var versionType = argv.version || "minor";
   return gulp.src(['./bower.json', './package.json'])
     .pipe(bump({type: versionType}).on('error', gutil.log))
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('./'))
+    .on('end', () => done());
 });
 
-gulp.task('commit-changes', function () {
+gulp.task('commit-changes', function (done) {
   return gulp.src('.')
     .pipe(git.add())
-    .pipe(git.commit('[Prerelease] Bumped version number'));
+    .pipe(git.commit('[Prerelease] Bumped version number'))
+    .on('end', () => done());;
 });
 
 gulp.task('push-changes', function (cb) {
