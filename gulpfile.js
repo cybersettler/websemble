@@ -105,20 +105,13 @@ gulp.task('create-new-tag', function(cb) {
   }
 });
 
-gulp.task('release', function(callback) {
-  runSequence(
-    'bump-version',
-    'changelog',
-    'commit-changes',
-    'push-changes',
-    'create-new-tag',
-    'github-release',
-    function(error) {
-      if (error) {
-        console.log(error.message);
-      } else {
-        console.log('RELEASE FINISHED SUCCESSFULLY');
-      }
-      callback(error);
-    });
+gulp.task('release', gulp.series(
+  'bump-version',
+  'changelog',
+  'commit-changes',
+  'push-changes',
+  'create-new-tag',
+  'github-release'), (done) => {
+    console.log('RELEASE FINISHED SUCCESSFULLY');
+    done();
 });
