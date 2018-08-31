@@ -1,3 +1,8 @@
+<a name="7.0.0"></a>
+# [7.0.0](https://github.com/cybersettler/websemble/compare/6.2.0...7.0.0) (2018-08-31)
+
+
+
 <a name="6.2.0"></a>
 # [6.2.0](https://github.com/cybersettler/websemble/compare/6.1.0...6.2.0) (2018-08-28)
 
