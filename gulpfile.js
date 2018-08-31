@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const mocha = require('gulp-mocha');
 const chalk = require('chalk');
 const eslint = require('gulp-eslint');
-const runSequence = require('run-sequence');
 const conventionalChangelog = require('gulp-conventional-changelog');
 const conventionalGithubReleaser = require('conventional-github-releaser');
 const bump = require('gulp-bump');
@@ -14,10 +13,9 @@ const parseArgs = require('minimist');
 // Lint JavaScript
 gulp.task('lint', function(done) {
   return gulp.src([
-    './App.js',
+    './ElectronApp.js',
     './index.js',
     './backend/**/*.js',
-    './frontend/**/*.js',
     './util/**/*.js'
   ])
   // eslint() attaches the lint output to the "eslint" property
@@ -71,7 +69,7 @@ gulp.task('bump-version', function(done) {
 // use minimist (https://www.npmjs.com/package/minimist) to determine with a
 // command argument whether you are doing a 'major', 'minor' or a 'patch' change.
   var argv = parseArgs(process.argv.slice(2));
-  var versionType = argv.version || "minor";
+  var versionType = argv.version || "major";
   return gulp.src(['./package.json'])
     .pipe(bump({type: versionType}).on('error', gutil.log))
     .pipe(gulp.dest('./'))

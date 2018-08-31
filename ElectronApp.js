@@ -15,7 +15,7 @@ var instance;
  * Entry point of the Electron application.
  * @param {object} config - Configuration object
  */
-function App(config) {
+function ElectronApp(config) {
   const ipc = electron.ipcMain;
 
   // Keep a global reference of the window object, if you don't, the window will
@@ -43,13 +43,13 @@ function App(config) {
   });
 
   this.onReady = onReady;
-  this.mainWindow = mainWindow;
 
   // This method will be called when Electron has done everything
   // initialization and ready for creating browser windows.
   onReady.then(function() {
     // Create the browser window.
     mainWindow = new BrowserWindow(config);
+    instance.mainWindow = mainWindow;
     // Start local server
     const expressApp = express();
     expressApp.use(express.static(app.getAppPath()));
@@ -151,6 +151,7 @@ function App(config) {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
+      console.log(`closing server listening on port ${port}`);
       mainWindow = null;
       listener.close();
     });
@@ -160,9 +161,10 @@ function App(config) {
 module.exports = {
   getInstance: function(config) {
     if (!instance && config) {
-      instance = new App(config);
+      instance = new ElectronApp(config);
     } else if (!instance && !config) {
-      throw new Error('Configuration missing trying to instantiate Electron App');
+      throw new Error(
+        'Configuration missing trying to instantiate Electron App');
     }
     return instance;
   }
