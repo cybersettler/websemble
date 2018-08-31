@@ -7,11 +7,15 @@ const RESTService = require('./backend/service/RESTService.js');
 const RESTResponse = require('./backend/service/RESTResponse');
 const BackendConfig = path.join(appRoot.toString(), 'backend/config.js');
 const fs = require('fs');
+const express = require('express');
+
+var instance;
 
 /**
  * Entry point of the Electron application.
+ * @param {object} config - Configuration object
  */
-function App() {
+function App(config) {
   const ipc = electron.ipcMain;
 
   // Keep a global reference of the window object, if you don't, the window will
@@ -39,22 +43,25 @@ function App() {
   });
 
   this.onReady = onReady;
+  this.mainWindow = mainWindow;
 
   // This method will be called when Electron has done everything
   // initialization and ready for creating browser windows.
   onReady.then(function() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      model: {data: 'some data'}
+    mainWindow = new BrowserWindow(config);
+    // Start local server
+    const expressApp = express();
+    expressApp.use(express.static(app.getAppPath()));
+    var port;
+    var listener = expressApp.listen(0, () => {
+      port = listener.address().port;
+      console.log(`Server listening on port ${port}!`, app.getAppPath());
+      // and load the index.html of the app.
+      mainWindow.loadURL(`http://localhost:${port}/`);
+      // Open the devtools.
+      mainWindow.openDevTools();
     });
-
-    // and load the index.html of the app.
-    mainWindow.loadURL('file://' + appRoot + '/index.html');
-
-    // Open the devtools.
-    mainWindow.openDevTools();
 
     ipc.on('reloadView', function(e, args) {
       console.log(args.viewId);
@@ -145,8 +152,18 @@ function App() {
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
       mainWindow = null;
+      listener.close();
     });
   });
 }
 
-module.exports = App;
+module.exports = {
+  getInstance: function(config) {
+    if (!instance && config) {
+      instance = new App(config);
+    } else if (!instance && !config) {
+      throw new Error('Configuration missing trying to instantiate Electron App');
+    }
+    return instance;
+  }
+};
