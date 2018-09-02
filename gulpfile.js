@@ -69,7 +69,7 @@ gulp.task('bump-version', function(done) {
 // use minimist (https://www.npmjs.com/package/minimist) to determine with a
 // command argument whether you are doing a 'major', 'minor' or a 'patch' change.
   var argv = parseArgs(process.argv.slice(2));
-  var versionType = argv.version || "major";
+  var versionType = argv.version || "patch";
   return gulp.src(['./package.json'])
     .pipe(bump({type: versionType}).on('error', gutil.log))
     .pipe(gulp.dest('./'))
