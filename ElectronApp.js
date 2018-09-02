@@ -52,6 +52,22 @@ function ElectronApp(config) {
     instance.mainWindow = mainWindow;
     // Start local server
     const expressApp = express();
+    // This is for js modules that do not
+    // use file extension in module import statements
+    // like i18next
+    expressApp.use(function(req, res, next) {
+      if (req.path.indexOf('.') === -1) {
+        var file = app.getAppPath() + req.path + '.js';
+        fs.exists(file, function(exists) {
+          if (exists) {
+            req.url += '.js';
+          }
+          next();
+        });
+      } else {
+        next();
+      }
+    });
     expressApp.use(express.static(app.getAppPath()));
     var port;
     var listener = expressApp.listen(0, () => {
