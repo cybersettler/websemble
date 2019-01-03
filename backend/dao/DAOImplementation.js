@@ -248,11 +248,16 @@ function loadDB(dao) { // eslint-disable-line require-jsdoc
   if (isDBloaded) {
     result = Promise.resolve(db);
   } else {
-    result = db.loadDatabase()
-      .then(function() {
-        dao.isDBloaded = true;
-        return db;
+    result = new Promise(function(fulfill, reject) {
+      db.loadDatabase(function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          dao.isDBloaded = true;
+          fulfill(db);
+        }
       });
+    });
   }
   return result;
 }
