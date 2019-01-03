@@ -3,8 +3,7 @@ const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 const path = require('path');
 const appRoot = require('app-root-path');
-const RESTService = require('./backend/service/RESTService.js');
-const RESTResponse = require('./backend/service/RESTResponse');
+const CatalogService = require('./backend/dao/service/CatalogService.js');
 const BackendConfig = path.join(appRoot.toString(), 'backend/config.js');
 const fs = require('fs');
 const express = require('express');
@@ -29,15 +28,6 @@ function ElectronApp(config) {
     }
   });
 
-  // Inititalize persistence layer
-  fs.exists(BackendConfig, function(result) {
-    if (result) {
-      RESTService.init(require(BackendConfig));
-    } else {
-      RESTService.init();
-    }
-  });
-
   var onReady = new Promise(function(fulfill) {
     app.on('ready', fulfill);
   });
@@ -50,6 +40,7 @@ function ElectronApp(config) {
     // Create the browser window.
     mainWindow = new BrowserWindow(config);
     instance.mainWindow = mainWindow;
+
     // Start local server
     const expressApp = express();
     // This is for js modules that do not
@@ -69,6 +60,16 @@ function ElectronApp(config) {
       }
     });
     expressApp.use(express.static(app.getAppPath()));
+
+    // Inititalize persistence layer
+    fs.exists(BackendConfig, function(result) {
+      if (result) {
+        CatalogService.init(require(BackendConfig).persistence, expressApp);
+      } else {
+        console.log('BackendConfig not found');
+      }
+    });
+
     var port;
     var listener = expressApp.listen(0, () => {
       port = listener.address().port;
@@ -90,76 +91,6 @@ function ElectronApp(config) {
       if (args.viewId === 'index') {
         mainWindow.toggleDevTools();
       }
-    });
-
-    ipc.on("get", function(e, args) {
-      RESTService.handleGet(args.ref).then(
-        function(result) {
-          result.request.token = args.token;
-          e.sender.send('response', result);
-        },
-        function(err) {
-          var response = new RESTResponse(args.ref, "GET", err);
-          response.request.token = args.token;
-          response.status = "500";
-          e.sender.send('response', response);
-        });
-    });
-
-    ipc.on("post", function(e, args) {
-      RESTService.handlePost(args.ref, args.data).then(
-        function(result) {
-          result.request.token = args.token;
-          e.sender.send('response', result);
-        },
-        function(err) {
-          var response = new RESTResponse(args.ref, "POST", err);
-          response.request.token = args.token;
-          response.status = "500";
-          e.sender.send('response', response);
-        });
-    });
-
-    ipc.on("put", function(e, args) {
-      RESTService.handlePut(args.ref, args.data).then(
-        function(result) {
-          result.request.token = args.token;
-          e.sender.send('response', result);
-        },
-        function(err) {
-          var response = new RESTResponse(args.ref, "PUT", err);
-          response.request.token = args.token;
-          response.status = "500";
-          e.sender.send('response', response);
-        });
-    });
-
-    ipc.on("patch", function(e, args) {
-      RESTService.handlePatch(args.ref, args.data).then(
-        function(result) {
-          result.request.token = args.token;
-          e.sender.send('response', result);
-        },
-        function(err) {
-          var response = new RESTResponse(args.ref, "PATCH", err);
-          response.request.token = args.token;
-          response.status = "500";
-          e.sender.send('response', response);
-        });
-    });
-
-    ipc.on("delete", function(e, args) {
-      RESTService.handleDelete(args.ref).then(
-        function(result) {
-          result.request.token = args.token;
-          e.sender.send('response', result);
-        },
-        function(err) {
-          var response = new RESTResponse(args.ref, "DELETE", err);
-          response.request.token = args.token;
-          response.status = "500";
-          e.sender.send('response', response);
-        });
     });
 
     // Emitted when the window is closed.
